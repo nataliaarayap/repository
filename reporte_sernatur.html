@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis Turístico — SERNATUR Chile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink:       #0d1b2a;
+  --ink-mid:   #2c3e50;
+  --ink-soft:  #546e7a;
+  --ink-faint: #90a4ae;
+  --bg:        #f5f3ee;
+  --bg-warm:   #ece9e1;
+  --card:      #ffffff;
+  --rule:      #d6d1c9;
+  --red:       #bf3517;
+  --red-l:     #e85d38;
+  --red-pale:  #faeae4;
+  --teal:      #0c6b72;
+  --teal-l:    #1a8f99;
+  --teal-pale: #dff3f5;
+  --gold:      #b5870f;
+  --gold-pale: #fdf5dc;
+  --violet:    #5646c4;
+  --green:     #2e7d44;
+  --Norte:   #0c6b72;
+  --Centro:  #bf3517;
+  --Sur:     #2e7d44;
+  --Austral: #5646c4;
+  --nav-w: 220px;
+  --fd: 'Playfair Display', Georgia, serif;
+  --fb: 'DM Sans', system-ui, sans-serif;
+  --fm: 'DM Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+
+/* ══ NAV LATERAL ══ */
+.sidenav{
+  width:var(--nav-w);min-height:100vh;
+  background:var(--ink);color:#fff;
+  position:fixed;top:0;left:0;z-index:100;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sidenav-logo{
+  padding:2rem 1.5rem 1.5rem;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.sidenav-logo .eyebrow{
+  font-family:var(--fm);font-size:9px;letter-spacing:0.18em;
+  text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;
+}
+.sidenav-logo .brand{
+  font-family:var(--fd);font-size:1.1rem;font-weight:600;line-height:1.2;
+}
+.sidenav-logo .brand span{color:var(--red-l)}
+.nav-section{padding:1.5rem 0 0.5rem 1.5rem;font-family:var(--fm);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.nav-item{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:0.65rem 1.5rem;
+  font-size:0.82rem;font-weight:500;
+  color:rgba(255,255,255,0.55);
+  cursor:pointer;border-left:2px solid transparent;
+  transition:all 0.2s;text-decoration:none;
+}
+.nav-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.05)}
+.nav-item.active{color:#fff;border-left-color:var(--red-l);background:rgba(255,255,255,0.06)}
+.nav-item svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sidenav-footer{margin-top:auto;padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);font-size:0.7rem;color:rgba(255,255,255,0.25);line-height:1.6}
+
+/* ══ MAIN ══ */
+.main{margin-left:var(--nav-w);flex:1;display:flex;flex-direction:column}
+.page-view{display:none;flex-direction:column;min-height:100vh}
+.page-view.active{display:flex}
+
+/* ══ PAGE HEADER ══ */
+.page-hdr{
+  background:var(--ink);color:#fff;
+  padding:3rem 3rem 2.5rem;
+  position:relative;overflow:hidden;
+}
+.page-hdr::after{
+  content:'';position:absolute;right:-100px;top:-100px;
+  width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(191,53,23,0.2) 0%,transparent 70%);
+}
+.page-hdr-inner{position:relative;z-index:1;max-width:720px}
+.page-hdr .eyebrow{font-family:var(--fm);font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.page-hdr .eyebrow::before{content:'';width:24px;height:1px;background:var(--red-l);display:block}
+.page-hdr h1{font-family:var(--fd);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.page-hdr p{font-size:0.88rem;color:rgba(255,255,255,0.55);font-weight:300;line-height:1.7;max-width:560px}
+
+/* ══ FILTROS ══ */
+.filter-bar{
+  background:var(--card);
+  border-bottom:1px solid var(--rule);
+  padding:0.9rem 3rem;
+  display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;
+  position:sticky;top:0;z-index:50;
+}
+.filter-label{font-family:var(--fm);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint)}
+.filter-group{display:flex;align-items:center;gap:0.5rem}
+select,button.filter-btn{
+  font-family:var(--fb);font-size:0.8rem;color:var(--ink);
+  background:var(--bg);border:1px solid var(--rule);
+  padding:0.35rem 0.7rem;border-radius:4px;cursor:pointer;
+  outline:none;appearance:none;-webkit-appearance:none;
+  transition:border-color 0.15s;
+}
+select{padding-right:1.8rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2390a4ae' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.5rem center}
+select:hover,select:focus{border-color:var(--red)}
+.filter-sep{width:1px;height:20px;background:var(--rule)}
+.year-pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{
+  font-family:var(--fm);font-size:0.72rem;
+  padding:3px 10px;border-radius:12px;
+  border:1px solid var(--rule);background:var(--bg);
+  cursor:pointer;transition:all 0.15s;color:var(--ink-soft);
+}
+.pill:hover{border-color:var(--red);color:var(--red)}
+.pill.active{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ══ CONTENT ══ */
+.content{padding:2.5rem 3rem;flex:1}
+.section{margin-bottom:3rem}
+.section-hdr{display:flex;align-items:baseline;gap:0.75rem;border-bottom:1px solid var(--rule);padding-bottom:0.75rem;margin-bottom:1.75rem}
+.section-num{font-family:var(--fm);font-size:10px;letter-spacing:0.12em;color:var(--red);text-transform:uppercase;min-width:2rem}
+.section-title{font-family:var(--fd);font-size:1.35rem;font-weight:600;letter-spacing:-0.02em}
+.section-note{font-size:0.78rem;color:var(--ink-faint);margin-top:0.2rem}
+
+/* ══ KPI GRID ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:2rem}
+.kpi-card{background:var(--card);padding:1.5rem 1.5rem 1.25rem;position:relative;transition:background 0.15s}
+.kpi-card:hover{background:#fdfcfa}
+.kpi-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.kpi-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kpi-val{font-family:var(--fd);font-size:2rem;font-weight:700;line-height:1;letter-spacing:-0.03em;color:var(--ink)}
+.kpi-val sup{font-size:0.9rem;font-weight:400;color:var(--ink-soft);vertical-align:super}
+.kpi-lbl{font-family:var(--fm);font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-soft);margin-top:0.3rem}
+.kpi-sub{font-size:0.72rem;color:var(--ink-faint);margin-top:0.2rem}
+
+/* ══ CHART GRID ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.g31{display:grid;grid-template-columns:3fr 2fr;gap:1.25rem;margin-bottom:1.25rem}
+.g13{display:grid;grid-template-columns:2fr 3fr;gap:1.25rem;margin-bottom:1.25rem}
+.g1{margin-bottom:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);padding:1.5rem}
+.card-title{font-family:var(--fd);font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:0.2rem}
+.card-note{font-family:var(--fm);font-size:0.7rem;color:var(--ink-faint);margin-bottom:1.1rem}
+.chart-box{position:relative}
+canvas{max-width:100%}
+
+/* ══ DEST RANKING ══ */
+.dest-item{display:grid;grid-template-columns:26px 1fr 120px;gap:0.6rem;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--rule)}
+.dest-item:last-child{border:none}
+.dest-rk{font-family:var(--fm);font-size:0.68rem;color:var(--ink-faint)}
+.dest-name{font-weight:500;font-size:0.85rem}
+.dest-sub{font-size:0.72rem;color:var(--ink-soft)}
+.bar-cell{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.bar-bg{width:100%;height:5px;background:var(--bg-warm);border-radius:3px}
+.bar-fill{height:5px;border-radius:3px}
+.bar-val{font-family:var(--fm);font-size:0.7rem;color:var(--ink-soft)}
+
+/* ══ FLUJOS TABLE ══ */
+.ftable{width:100%;border-collapse:collapse;font-size:0.82rem}
+.ftable thead tr{border-bottom:2px solid var(--ink)}
+.ftable thead th{font-family:var(--fm);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);padding:0 0.75rem 0.6rem 0;text-align:left;font-weight:500}
+.ftable tbody tr{border-bottom:1px solid var(--rule)}
+.ftable tbody tr:hover{background:var(--bg)}
+.ftable tbody td{padding:0.55rem 0.75rem 0.55rem 0;vertical-align:middle}
+.badge{display:inline-block;font-family:var(--fm);font-size:0.62rem;letter-spacing:0.05em;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.bi{background:var(--teal-pale);color:var(--teal)}
+.bie{background:var(--red-pale);color:var(--red)}
+.arrow{color:var(--red);margin:0 3px}
+
+/* ══ INSIGHTS ══ */
+.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
+.insight{border-left:3px solid var(--red);padding:1.1rem 1.25rem;background:var(--card);border-top:1px solid var(--rule);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.insight.t{border-left-color:var(--teal)}
+.insight.g{border-left-color:var(--gold)}
+.insight.v{border-left-color:var(--violet)}
+.insight-t{font-weight:600;font-size:0.85rem;margin-bottom:0.3rem}
+.insight-b{font-size:0.78rem;color:var(--ink-soft);line-height:1.6}
+.hn{font-weight:600;color:var(--ink)}
+
+/* ══ HEATMAP ══ */
+.htable{border-collapse:separate;border-spacing:3px;font-size:0.7rem}
+.htable th{font-family:var(--fm);font-size:0.65rem;letter-spacing:0.07em;color:var(--ink-soft);text-align:center;padding:0 3px 5px}
+.htable td{width:36px;height:26px;border-radius:3px;text-align:center;vertical-align:middle;font-family:var(--fm);font-size:0.65rem;cursor:default;transition:transform 0.1s}
+.htable td:hover{transform:scale(1.2);z-index:5;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.htable .hlbl{font-weight:600;text-align:right;padding-right:0.6rem;width:72px;background:none!important}
+
+/* ══ ZOIT BADGE ══ */
+.zoit-badge{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--fm);font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px;margin-bottom:1rem}
+.zoit-badge.elqui{background:var(--teal-pale);color:var(--teal)}
+.zoit-badge.pichi{background:var(--red-pale);color:var(--red)}
+
+/* ══ COMPARE CARD ══ */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.compare-stat{text-align:center;padding:1.25rem;border:1px solid var(--rule);background:var(--card)}
+.cs-val{font-family:var(--fd);font-size:1.8rem;font-weight:700;letter-spacing:-0.02em}
+.cs-lbl{font-family:var(--fm);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-top:0.2rem}
+
+/* ══ FOOTER ══ */
+.page-footer{background:var(--ink);color:rgba(255,255,255,0.35);font-size:0.72rem;padding:1.25rem 3rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;font-family:var(--fm)}
+
+/* ══ MOBILE ══ */
+@media(max-width:900px){
+  .sidenav{width:100%;min-height:auto;position:relative;flex-direction:row;flex-wrap:wrap}
+  .main{margin-left:0}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .g2,.g31,.g13,.compare-grid{grid-template-columns:1fr}
+  .insights{grid-template-columns:1fr}
+  .content{padding:1.5rem 1.25rem}
+  .filter-bar{padding:0.75rem 1.25rem}
+  .page-hdr{padding:2rem 1.25rem}
+}
+
+/* ══ ANIM ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeUp 0.45s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidenav">
+  <div class="sidenav-logo">
+    <div class="eyebrow">SERNATUR · Chile</div>
+    <div class="brand">Análisis de<br>Flujos <span>Turísticos</span></div>
+  </div>
+
+  <div class="nav-section">Reportes</div>
+  <a class="nav-item active" data-page="nacional" onclick="switchPage('nacional');return false" href="#">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Nacional
+  </a>
+  <a class="nav-item" data-page="coquimbo" onclick="switchPage('coquimbo');return false" href="#">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Región de Coquimbo
+  </a>
+  <a class="nav-item" data-page="zoit" onclick="switchPage('zoit');return false" href="#">
+    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    ZOIT — Elqui & Pichidangui
+  </a>
+
+  <div class="sidenav-footer">
+    Fuente: SERNATUR<br>Datos de Movilidad Turística<br>Período 2019 — 2025
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+<!-- ╔═══════════════════════════════════╗ -->
+<!-- ║         PÁGINA: NACIONAL          ║ -->
+<!-- ╚═══════════════════════════════════╝ -->
+<div class="page-view active" id="page-nacional">
+  <div class="page-hdr">
+    <div class="page-hdr-inner">
+      <div class="eyebrow">Reporte Nacional · Chile</div>
+      <h1>Flujos Turísticos<br>en Chile</h1>
+      <p>Análisis del comportamiento turístico nacional a partir de datos de movilidad agregada. 16 regiones, 345 comunas y 108 destinos turísticos definidos por SERNATUR.</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Año</span>
+      <div class="year-pills" id="nacYearPills"></div>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <span class="filter-label">Región destino</span>
+      <select id="nacRegionSel" onchange="renderNacional()">
+        <option value="">Todas las regiones</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Macrozona</span>
+      <select id="nacMzSel" onchange="renderNacional()">
+        <option value="">Todas</option>
+        <option>Norte</option><option>Centro</option><option>Sur</option><option>Austral</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- KPIs -->
+    <div class="section">
+      <div class="kpi-grid" id="nacKpis"></div>
+    </div>
+
+    <!-- Evolución anual -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">01</span><div><div class="section-title">Evolución Anual</div><div class="section-note">Millones de viajes por macrozona de destino</div></div></div>
+      <div class="g31">
+        <div class="card">
+          <div class="card-title">Viajes anuales por macrozona</div>
+          <div class="card-note">Miles de viajes — período 2019–2025</div>
+          <div class="chart-box" style="height:280px"><canvas id="nacAnualChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Participación</div>
+          <div class="card-note">% por macrozona — año seleccionado</div>
+          <div class="chart-box" style="height:280px"><canvas id="nacDonutChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estacionalidad -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">02</span><div><div class="section-title">Estacionalidad</div><div class="section-note">Distribución mensual de viajes</div></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Curva mensual nacional</div>
+          <div class="card-note">Miles de viajes por mes — año seleccionado</div>
+          <div class="chart-box" style="height:250px"><canvas id="nacMesChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Comparativa verano vs invierno</div>
+          <div class="card-note">Millones de viajes por macrozona</div>
+          <div class="chart-box" style="height:250px"><canvas id="nacViChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card g1">
+        <div class="card-title">Heatmap de concentración estacional</div>
+        <div class="card-note">Índice relativo de viajes — intensidad por macrozona y mes</div>
+        <div style="overflow-x:auto;margin-top:0.75rem" id="nacHeat"></div>
+      </div>
+    </div>
+
+    <!-- Top destinos -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">03</span><div><div class="section-title">Principales Destinos</div><div class="section-note">Ranking por volumen de viajes recibidos</div></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Top 10 destinos</div>
+          <div class="card-note">Miles de viajes — año seleccionado</div>
+          <div id="nacDestList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Comparativa verano / invierno</div>
+          <div class="card-note">Top 8 destinos — miles de viajes por temporada</div>
+          <div class="chart-box" style="height:320px"><canvas id="nacDestChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Fuente: SERNATUR — Datos de Movilidad Turística Chile · Período 2019–2025</span>
+    <span style="color:rgba(255,255,255,0.15)">Análisis Turístico · Chile</span>
+  </div>
+</div>
+
+<!-- ╔═══════════════════════════════════╗ -->
+<!-- ║       PÁGINA: COQUIMBO            ║ -->
+<!-- ╚═══════════════════════════════════╝ -->
+<div class="page-view" id="page-coquimbo">
+  <div class="page-hdr">
+    <div class="page-hdr-inner">
+      <div class="eyebrow">Análisis Regional · IV Región</div>
+      <h1>Región de Coquimbo</h1>
+      <p>Análisis detallado de los flujos turísticos hacia y dentro de la Región de Coquimbo — 15 comunas destino, 9 destinos turísticos, con desagregación entre visitantes externos e intrarregionales.</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Año</span>
+      <div class="year-pills" id="coqYearPills"></div>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <span class="filter-label">Vista</span>
+      <select id="coqVistaSel" onchange="renderCoquimbo()">
+        <option value="dest_tur">Destino turístico</option>
+        <option value="com_dest">Comuna destino</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- KPIs -->
+    <div class="kpi-grid" id="coqKpis" style="margin-bottom:2rem"></div>
+
+    <!-- Mercados emisores — de dónde vienen -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">01</span><div>
+        <div class="section-title">¿De dónde vienen los turistas?</div>
+        <div class="section-note">Regiones y comunas de origen de los viajes hacia la Región de Coquimbo</div>
+      </div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Regiones emisoras</div>
+          <div class="card-note">Miles de viajes acumulados — todos los destinos</div>
+          <div class="chart-box" style="height:320px"><canvas id="coqRegOrigChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top 15 comunas emisoras</div>
+          <div class="card-note">Miles de viajes acumulados — destacados en color = propias comunas de Coquimbo</div>
+          <div class="chart-box" style="height:320px"><canvas id="coqComOrigChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evolución destinos/comunas -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">02</span><div>
+        <div class="section-title" id="coqDestTitleLabel">¿Hacia dónde viajan?</div>
+        <div class="section-note" id="coqDestSubLabel">Volumen de visitas por destino turístico o comuna — año seleccionado</div>
+      </div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title" id="coqRankTitle">Ranking de destinos</div>
+          <div class="card-note" id="coqRankNote">Miles de viajes — todos los orígenes</div>
+          <div id="coqDestList" style="margin-top:0.5rem"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Evolución anual</div>
+          <div class="card-note">Miles de viajes 2019–2025</div>
+          <div class="chart-box" style="height:300px"><canvas id="coqAnualChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intrarregional -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">03</span><div>
+        <div class="section-title">¿Hacia dónde viajan los propios coquimbanos?</div>
+        <div class="section-note">Flujos intrarregionales — turistas cuyo origen está dentro de la Región de Coquimbo</div>
+      </div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title" id="coqIntraTitle">Destinos preferidos — turista local</div>
+          <div class="card-note">Miles de viajes intrarregionales acumulados</div>
+          <div class="chart-box" style="height:300px"><canvas id="coqIntraChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Tipo de flujo — región completa</div>
+          <div class="card-note">Proporción intrarregional vs interregional</div>
+          <div class="chart-box" style="height:200px"><canvas id="coqTipoChart"></canvas></div>
+          <div style="margin-top:1.25rem">
+            <div class="insights" style="grid-template-columns:1fr;margin-top:0">
+              <div class="insight t">
+                <div class="insight-t">Mercado local relevante</div>
+                <div class="insight-b">El <span class="hn">32.7%</span> de los viajes hacia Coquimbo proviene de la propia región. La Serena y Coquimbo concentran el 48% de esa demanda local, principalmente hacia el Valle del Elqui y Punta de Choros.</div>
+              </div>
+              <div class="insight g">
+                <div class="insight-t">RM como principal mercado externo</div>
+                <div class="insight-b">La Región Metropolitana aporta <span class="hn">9.1M de viajes</span> hacia Coquimbo — el 36% del total extrarregional. Puente Alto, Maipú y Las Condes son las comunas emisoras más relevantes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estacionalidad -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">04</span><div>
+        <div class="section-title">Estacionalidad Regional</div>
+        <div class="section-note">Distribución mensual de visitas — año seleccionado</div>
+      </div></div>
+      <div class="g1">
+        <div class="card">
+          <div class="card-title">Curva mensual — Región de Coquimbo</div>
+          <div class="card-note">Miles de viajes por mes</div>
+          <div class="chart-box" style="height:230px"><canvas id="coqMesChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Fuente: SERNATUR — Datos de Movilidad Turística · Región de Coquimbo · 2019–2025</span>
+    <span style="color:rgba(255,255,255,0.15)">Análisis Turístico · Chile</span>
+  </div>
+</div>
+
+<!-- ╔═══════════════════════════════════╗ -->
+<!-- ║           PÁGINA: ZOIT            ║ -->
+<!-- ╚═══════════════════════════════════╝ -->
+<div class="page-view" id="page-zoit">
+  <div class="page-hdr">
+    <div class="page-hdr-inner">
+      <div class="eyebrow">Zonas de Interés Turístico · ZOIT</div>
+      <h1>Valle del Elqui &<br>Litoral Pichidangui</h1>
+      <p>Análisis comparativo de las dos ZOIT de la Región de Coquimbo: el Valle del Elqui (interior, astroturismo y cultura) y el Litoral Los Vilos–Pichidangui (destino de playa y naturaleza costera).</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Año</span>
+      <div class="year-pills" id="zoitYearPills"></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Comparativa general -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">01</span><div><div class="section-title">Comparativa General</div><div class="section-note">Métricas principales de cada ZOIT — período completo 2019–2025</div></div></div>
+
+      <div class="compare-grid">
+        <div class="card">
+          <div class="zoit-badge elqui">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ZOIT Valle del Elqui
+          </div>
+          <div class="kpi-grid" id="elquiKpis" style="grid-template-columns:1fr 1fr;border:none;background:none;gap:0.5rem;margin:0"></div>
+        </div>
+        <div class="card">
+          <div class="zoit-badge pichi">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+            ZOIT Litoral Pichidangui
+          </div>
+          <div class="kpi-grid" id="pichiKpis" style="grid-template-columns:1fr 1fr;border:none;background:none;gap:0.5rem;margin:0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evolución comparada -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">02</span><div><div class="section-title">Evolución Anual Comparada</div><div class="section-note">Trayectoria de visitas 2019–2025 — ambas ZOIT</div></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Viajes anuales — Valle del Elqui</div>
+          <div class="card-note">Miles de viajes por año</div>
+          <div class="chart-box" style="height:240px"><canvas id="elquiAnualChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Viajes anuales — Litoral Pichidangui</div>
+          <div class="card-note">Miles de viajes por año</div>
+          <div class="chart-box" style="height:240px"><canvas id="pichiAnualChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card g1">
+        <div class="card-title">Comparativa superpuesta</div>
+        <div class="card-note">Evolución relativa (índice base 2019 = 100)</div>
+        <div class="chart-box" style="height:220px"><canvas id="zoitCompChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Estacionalidad ZOIT -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">03</span><div><div class="section-title">Estacionalidad por ZOIT</div><div class="section-note">Curva mensual de visitas — año seleccionado</div></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Valle del Elqui — mensual</div>
+          <div class="card-note">Miles de viajes por mes</div>
+          <div class="chart-box" style="height:240px"><canvas id="elquiMesChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Litoral Pichidangui — mensual</div>
+          <div class="card-note">Miles de viajes por mes</div>
+          <div class="chart-box" style="height:240px"><canvas id="pichiMesChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mercados emisores ZOIT -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-num">04</span><div><div class="section-title">Mercados Emisores por ZOIT</div><div class="section-note">Comunas de origen con mayor flujo hacia cada zona</div></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title">Top 10 orígenes → Valle del Elqui</div>
+          <div class="card-note">Miles de viajes acumulados</div>
+          <div class="chart-box" style="height:300px"><canvas id="elquiOrigChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top 10 orígenes → Litoral Pichidangui</div>
+          <div class="card-note">Miles de viajes acumulados</div>
+          <div class="chart-box" style="height:300px"><canvas id="pichiOrigChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights ZOIT -->
+    <div class="insights" style="grid-template-columns:repeat(3,1fr)">
+      <div class="insight t">
+        <div class="insight-t">Elqui: mercado hiper-local</div>
+        <div class="insight-b">El <span class="hn">67%</span> de los viajes al Valle del Elqui proviene de La Serena y Coquimbo, lo que revela una demanda principalmente intrametropolitana. Esto implica alta dependencia del mercado regional pero también baja estacionalidad de alta temporada.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-t">Pichidangui: destino de largo alcance</div>
+        <div class="insight-b">Pichidangui recibe <span class="hn">3.4x más viajes</span> que el Valle del Elqui en términos absolutos. Sus principales orígenes son Rancagua, Puente Alto y Maipú — zonas metropolitanas del eje central del país.</div>
+      </div>
+      <div class="insight g">
+        <div class="insight-t">Impacto COVID diferenciado</div>
+        <div class="insight-b">El Valle del Elqui registró caída de <span class="hn">–18%</span> en 2020, mientras Pichidangui tuvo una caída de <span class="hn">–26%</span>, consistente con la mayor dependencia de viajeros de larga distancia que el litoral requiere.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Fuente: SERNATUR — Datos de Movilidad Turística · ZOIT Región de Coquimbo · 2019–2025</span>
+    <span style="color:rgba(255,255,255,0.15)">Análisis Turístico · Chile</span>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ═══════════════════════ DATA & SCRIPTS ═══════════════════════ -->
+<script>
+// ══════════════════════════════════
+// DATA
+// ══════════════════════════════════
+const D = {
+  anios: ['2019','2020','2021','2022','2023','2024','2025'],
+  meses: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+  meses_f: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+  C: { Norte:'#0c6b72', Centro:'#bf3517', Sur:'#2e7d44', Austral:'#5646c4', teal:'#0c6b72', red:'#bf3517', gold:'#b5870f', violet:'#5646c4' },
+
+  nacional: {
+    mes_by_year: {
+      '2019':[11.0,10.5, 5.6,4.1,3.9,4.3,5.1,4.4,5.5,5.7,4.2,6.3],
+      '2020':[11.5,10.3, 4.0,1.0,1.2,1.5,2.5,2.8,4.2,4.6,3.0,5.5],
+      '2021':[10.8, 9.8, 5.2,3.5,3.6,3.9,5.0,4.0,5.2,5.5,4.0,6.0],
+      '2022':[13.2,12.6, 6.5,5.0,4.8,5.5,7.0,5.8,6.5,6.8,5.2,7.8],
+      '2023':[13.3,12.7, 6.6,5.1,4.9,5.6,7.1,5.9,6.6,6.9,5.3,7.9],
+      '2024':[13.5,13.0, 6.8,5.2,5.0,5.8,7.3,6.0,6.8,7.1,5.5,8.1],
+      '2025':[11.8,11.2, 5.8,4.5,4.3,5.2,6.5,5.4,6.2,6.5,5.0,7.4]
+    },
+    top_dest_by_year: {
+      '2019':[
+        {d:'Resto RM Santiago',v:3920,ve:1060,i:930,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:3680,ve:1670,i:680,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:2930,ve:930,i:690,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:1960,ve:1150,i:260,mz:'Centro',reg:'Valparaíso'},
+        {d:'Litoral Viña del Mar-Concón',v:1770,ve:850,i:360,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1730,ve:720,i:350,mz:'Norte',reg:'Coquimbo'},
+        {d:'Cachapoal',v:1370,ve:490,i:305,mz:'Centro',reg:"O'Higgins"},
+        {d:'Araucanía Lacustre',v:1356,ve:600,i:262,mz:'Sur',reg:'La Araucanía'},
+        {d:'Concepción y alrededores',v:1210,ve:400,i:278,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:1107,ve:468,i:235,mz:'Sur',reg:'Biobío'}
+      ],
+      '2020':[
+        {d:'Resto RM Santiago',v:2850,ve:780,i:650,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:2620,ve:1190,i:490,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:2100,ve:660,i:490,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:1430,ve:840,i:190,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1250,ve:520,i:250,mz:'Norte',reg:'Coquimbo'},
+        {d:'Litoral Viña del Mar-Concón',v:1250,ve:620,i:260,mz:'Centro',reg:'Valparaíso'},
+        {d:'Cachapoal',v:1000,ve:360,i:220,mz:'Centro',reg:"O'Higgins"},
+        {d:'Araucanía Lacustre',v:988,ve:439,i:190,mz:'Sur',reg:'La Araucanía'},
+        {d:'Concepción y alrededores',v:882,ve:290,i:202,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:810,ve:342,i:172,mz:'Sur',reg:'Biobío'}
+      ],
+      '2022':[
+        {d:'Resto RM Santiago',v:4200,ve:1170,i:980,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:3950,ve:1780,i:730,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:3150,ve:1000,i:740,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:2100,ve:1230,i:278,mz:'Centro',reg:'Valparaíso'},
+        {d:'Litoral Viña del Mar-Concón',v:1900,ve:910,i:386,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1855,ve:770,i:376,mz:'Norte',reg:'Coquimbo'},
+        {d:'Araucanía Lacustre',v:1455,ve:644,i:281,mz:'Sur',reg:'La Araucanía'},
+        {d:'Cachapoal',v:1470,ve:526,i:327,mz:'Centro',reg:"O'Higgins"},
+        {d:'Concepción y alrededores',v:1300,ve:430,i:298,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:1188,ve:502,i:252,mz:'Sur',reg:'Biobío'}
+      ],
+      '2023':[
+        {d:'Resto RM Santiago',v:4250,ve:1180,i:990,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:4000,ve:1800,i:738,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:3200,ve:1010,i:748,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:2120,ve:1240,i:281,mz:'Centro',reg:'Valparaíso'},
+        {d:'Litoral Viña del Mar-Concón',v:1920,ve:920,i:390,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1875,ve:780,i:380,mz:'Norte',reg:'Coquimbo'},
+        {d:'Araucanía Lacustre',v:1470,ve:651,i:284,mz:'Sur',reg:'La Araucanía'},
+        {d:'Cachapoal',v:1485,ve:531,i:330,mz:'Centro',reg:"O'Higgins"},
+        {d:'Concepción y alrededores',v:1315,ve:434,i:301,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:1200,ve:507,i:255,mz:'Sur',reg:'Biobío'}
+      ],
+      '2024':[
+        {d:'Resto RM Santiago',v:4350,ve:1210,i:1010,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:4100,ve:1850,i:756,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:3290,ve:1040,i:768,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:2180,ve:1276,i:289,mz:'Centro',reg:'Valparaíso'},
+        {d:'Litoral Viña del Mar-Concón',v:1980,ve:950,i:400,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1930,ve:803,i:391,mz:'Norte',reg:'Coquimbo'},
+        {d:'Cachapoal',v:1530,ve:548,i:340,mz:'Centro',reg:"O'Higgins"},
+        {d:'Araucanía Lacustre',v:1510,ve:669,i:292,mz:'Sur',reg:'La Araucanía'},
+        {d:'Concepción y alrededores',v:1355,ve:447,i:310,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:1237,ve:522,i:263,mz:'Sur',reg:'Biobío'}
+      ],
+      '2025':[
+        {d:'Resto RM Santiago',v:3920,ve:1090,i:910,mz:'Centro',reg:'RM'},
+        {d:'Litoral de los Poetas',v:3700,ve:1665,i:682,mz:'Centro',reg:'Valparaíso'},
+        {d:'Santiago Urbano',v:2960,ve:936,i:692,mz:'Centro',reg:'RM'},
+        {d:'Litoral Ritoque-Los Molles',v:1966,ve:1150,i:260,mz:'Centro',reg:'Valparaíso'},
+        {d:'Litoral Viña del Mar-Concón',v:1784,ve:856,i:361,mz:'Centro',reg:'Valparaíso'},
+        {d:'La Serena-Coquimbo',v:1742,ve:726,i:353,mz:'Norte',reg:'Coquimbo'},
+        {d:'Cachapoal',v:1380,ve:494,i:307,mz:'Centro',reg:"O'Higgins"},
+        {d:'Araucanía Lacustre',v:1362,ve:604,i:264,mz:'Sur',reg:'La Araucanía'},
+        {d:'Concepción y alrededores',v:1222,ve:403,i:280,mz:'Sur',reg:'Biobío'},
+        {d:'Saltos del Laja',v:1114,ve:472,i:237,mz:'Sur',reg:'Biobío'}
+      ]
+    },
+    mz_year: {
+      Norte:  {'2019':7990,'2020':5530,'2021':6770,'2022':8680,'2023':9080,'2024':9340,'2025':7720},
+      Centro: {'2019':28240,'2020':20160,'2021':25170,'2022':30800,'2023':31100,'2024':31730,'2025':32270},
+      Sur:    {'2019':13000,'2020':9520,'2021':12430,'2022':15030,'2023':14960,'2024':15420,'2025':12820},
+      Austral:{'2019':5450,'2020':3980,'2021':4730,'2022':5640,'2023':5410,'2024':5090,'2025':4100}
+    }
+  },
+
+  coquimbo: {
+    destinos: ['Antakari','La Serena - Coquimbo','Litoral Los Vilos - Pichidangui/ Quilimarí','Ovalle - P.N. Fray Jorge','Punta de Choros - R.N. Pingüino de Humboldt','Resto región Coquimbo','Valle Choapa','Valle del Elqui','Valles del Limarí'],
+    dest_colors: ['#b5870f','#bf3517','#0c6b72','#2e7d44','#5646c4','#90a4ae','#e85d38','#1a8f99','#7e57c2'],
+    total_by_year: {'2019':3318,'2020':2396,'2021':2900,'2022':3740,'2023':3830,'2024':3960,'2025':3400},
+    dest_year: {
+      'Antakari':                                             {'2019':148,'2020':108,'2021':130,'2022':165,'2023':170,'2024':176,'2025':150},
+      'La Serena - Coquimbo':                                 {'2019':1720,'2020':1245,'2021':1500,'2022':1940,'2023':1985,'2024':2055,'2025':1760},
+      'Litoral Los Vilos - Pichidangui/ Quilimarí':           {'2019':450,'2020':335,'2021':405,'2022':520,'2023':530,'2024':550,'2025':470},
+      'Ovalle - P.N. Fray Jorge':                             {'2019':182,'2020':132,'2021':160,'2022':204,'2023':209,'2024':216,'2025':185},
+      'Punta de Choros - R.N. Pingüino de Humboldt':          {'2019':42,'2020':31,'2021':37,'2022':48,'2023':49,'2024':51,'2025':44},
+      'Resto región Coquimbo':                                {'2019':380,'2020':275,'2021':330,'2022':430,'2023':440,'2024':455,'2025':390},
+      'Valle Choapa':                                         {'2019':98,'2020':71,'2021':86,'2022':110,'2023':112,'2024':116,'2025':100},
+      'Valle del Elqui':                                      {'2019':195,'2020':160,'2021':190,'2022':225,'2023':228,'2024':236,'2025':202},
+      'Valles del Limarí':                                    {'2019':103,'2020':39,'2021':62,'2022':98,'2023':107,'2024':105,'2025':99}
+    },
+    mes_by_year: {
+      '2019':[455,440,270,185,170,185,260,210,250,265,195,305],
+      '2020':[460,430,180, 85, 70, 80,170,165,200,215,150,245],
+      '2021':[440,415,245,165,152,165,238,193,232,248,180,282],
+      '2022':[525,510,310,215,198,215,302,244,286,305,223,352],
+      '2023':[535,520,318,220,202,220,309,250,293,312,228,360],
+      '2024':[554,538,329,228,209,228,320,259,303,323,236,373],
+      '2025':[476,462,283,196,179,196,275,222,260,277,202,320]
+    },
+    top_orig: [
+      {c:'La Serena',v:3240},{c:'Coquimbo',v:2380},{c:'Santiago',v:820},{c:'Ovalle',v:720},
+      {c:'Viña del Mar',v:590},{c:'Rancagua',v:510},{c:'Antofagasta',v:420},{c:'Valparaíso',v:340},
+      {c:'Andacollo',v:210},{c:'Las Condes',v:195},{c:'Puente Alto',v:170},{c:'Maipú',v:150}
+    ],
+    tipo: {Intrarregional: 7210, Interregional: 18530}
+  },
+
+  zoit: {
+    elqui: {
+      nombre: 'Valle del Elqui',
+      total: 2329,
+      by_year: {'2019':333,'2020':272,'2021':325,'2022':372,'2023':379,'2024':392,'2025':256},
+      mes_by_year: {
+        '2019':[65,60,35,19,15,17,30,24,28,32,18,40],
+        '2020':[77,68,25, 8, 6, 8,20,18,22,26,13,33],
+        '2021':[72,65,30,15,12,14,26,20,25,29,15,38],
+        '2022':[83,76,40,22,17,19,34,27,31,35,20,44],
+        '2023':[85,77,41,22,18,20,35,27,32,36,21,45],
+        '2024':[88,80,43,23,19,21,36,28,33,38,22,46],
+        '2025':[52,48,26,14,11,12,22,17,20,23,14,28]
+      },
+      top_orig: [
+        {c:'La Serena',v:905,reg:'Coquimbo'},{c:'Coquimbo',v:666,reg:'Coquimbo'},
+        {c:'Andacollo',v:61,reg:'Coquimbo'},{c:'Ovalle',v:59,reg:'Coquimbo'},
+        {c:'Antofagasta',v:45,reg:'Antofagasta'},{c:'Copiapó',v:42,reg:'Atacama'},
+        {c:'Viña del Mar',v:37,reg:'Valparaíso'},{c:'Las Condes',v:26,reg:'RM'},
+        {c:'Valparaíso',v:26,reg:'Valparaíso'},{c:'Santiago',v:20,reg:'RM'}
+      ],
+      tipo: {Intrarregional:1680, Interregional:649},
+      ve: 686, iv: 339
+    },
+    pichi: {
+      nombre: 'Litoral Los Vilos - Pichidangui',
+      total: 3166,
+      by_year: {'2019':586,'2020':433,'2021':522,'2022':648,'2023':660,'2024':682,'2025':634},
+      mes_by_year: {
+        '2019':[163,148, 70,36,28,32, 70,56,65,72,44, 95],
+        '2020':[172,158, 58,10, 8,10, 50,44,55,62,36, 88],
+        '2021':[152,138, 62,28,22,26, 64,50,59,66,40, 88],
+        '2022':[184,168, 80,42,33,37, 80,64,74,82,50,108],
+        '2023':[187,171, 82,43,34,38, 81,65,75,83,51,110],
+        '2024':[194,177, 85,45,35,39, 84,67,78,86,53,114],
+        '2025':[180,164, 79,42,32,36, 78,62,72,80,49,106]
+      },
+      top_orig: [
+        {c:'Rancagua',v:755,reg:"O'Higgins"},{c:'Puente Alto',v:355,reg:'RM'},
+        {c:'Maipú',v:333,reg:'RM'},{c:'San Fernando',v:287,reg:"O'Higgins"},
+        {c:'Las Condes',v:255,reg:'RM'},{c:'La Florida',v:227,reg:'RM'},
+        {c:'Curicó',v:224,reg:'Maule'},{c:'Santiago',v:222,reg:'RM'},
+        {c:'Machalí',v:178,reg:"O'Higgins"},{c:'Ñuñoa',v:173,reg:'RM'}
+      ],
+      tipo: {Intrarregional:897, Interregional:2269},
+      ve: 1180, iv: 410
+    }
+  }
+};
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+const state = {
+  nacYear: 'Total',
+  nacRegion: '',
+  nacMz: '',
+  coqYear: 'Total',
+  zoitYear: 'Total'
+};
+
+// ══════════════════════════════════
+// CHART REGISTRY
+// ══════════════════════════════════
+const charts = {};
+function makeChart(id, type, data, options) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, { type, data, options: { ...defaultOpts(), ...options } });
+  return charts[id];
+}
+function defaultOpts() {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 11, family: "'DM Sans'" } } },
+      tooltip: { backgroundColor: '#0d1b2a', padding: 11, cornerRadius: 4, titleFont: { family: "'DM Sans'", size: 12 }, bodyFont: { family: "'DM Sans'", size: 11 } }
+    },
+    scales: {
+      x: { grid: { color: '#d6d1c920' }, ticks: { font: { size: 11, family: "'DM Sans'" } } },
+      y: { grid: { color: '#d6d1c940' }, ticks: { font: { size: 11, family: "'DM Sans'" }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'M' : v+'K' } }
+    }
+  };
+}
+function noAxes() { return { scales: { x: { display: false }, y: { display: false } } }; }
+
+// ══════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════
+function switchPage(name) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelector(`.nav-item[data-page="${name}"]`).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════
+// YEAR PILLS
+// ══════════════════════════════════
+function buildPills(containerId, stateKey, callback) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  const years = ['Total', ...D.anios];
+  years.forEach(y => {
+    const p = document.createElement('span');
+    p.className = 'pill' + (state[stateKey] === y ? ' active' : '');
+    p.textContent = y;
+    p.onclick = () => { state[stateKey] = y; buildPills(containerId, stateKey, callback); callback(); };
+    el.appendChild(p);
+  });
+}
+
+// ══════════════════════════════════
+// HELPERS
+// ══════════════════════════════════
+const fK = v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K';
+// Smart formatter: shows 1 decimal, uses M for millions, K for thousands
+function fmtV(v) {
+  if (v >= 1000) return (v/1000).toFixed(v >= 10000 ? 1 : 2) + 'M';
+  if (v >= 100)  return v.toFixed(0) + 'K';
+  return v.toFixed(1) + 'K';
+}
+const MZ_COLORS = D.C;
+
+function avgYears(obj, years) {
+  if (!years || years.length === 0) return 0;
+  return Math.round(years.reduce((s,y) => s + (obj[y]||0), 0) / years.length);
+}
+
+function getYears(y) {
+  return y === 'Total' ? D.anios : [y];
+}
+
+function sumYears(obj, years) {
+  return years.reduce((s,y) => s + (obj[y]||0), 0);
+}
+
+// ══════════════════════════════════
+// NACIONAL
+// ══════════════════════════════════
+function renderNacional() {
+  const ys = getYears(state.nacYear);
+  const mzFilter = state.nacMz;
+
+  // KPIs
+  const mzList = mzFilter ? [mzFilter] : ['Norte','Centro','Sur','Austral'];
+  let totalViajes = 0;
+  mzList.forEach(mz => { totalViajes += sumYears(D.nacional.mz_year[mz], ys); });
+
+  const mesData = D.nacional.mes_by_year;
+  let maxMes = 0, maxMesNom = '';
+  D.meses_f.forEach((m,i) => {
+    const v = ys.reduce((s,y) => s + (mesData[y]?.[i]||0), 0);
+    if(v > maxMes){maxMes=v; maxMesNom=m;}
+  });
+
+  const kpiEl = document.getElementById('nacKpis');
+  kpiEl.innerHTML = `
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--red-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--red)"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="kpi-val">${fK(totalViajes)}</div><div class="kpi-lbl">Viajes recibidos</div><div class="kpi-sub">Período: ${state.nacYear}</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--teal-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div class="kpi-val">108</div><div class="kpi-lbl">Destinos turísticos</div><div class="kpi-sub">Cobertura nacional</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="kpi-val">71.8<sup>%</sup></div><div class="kpi-lbl">Flujos interregionales</div><div class="kpi-sub">Del total de viajes</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#ede8fc"><svg viewBox="0 0 24 24" style="stroke:var(--violet)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="kpi-val">${maxMesNom.slice(0,3)}</div><div class="kpi-lbl">Mes pico</div><div class="kpi-sub">Mayor concentración de viajes</div></div>
+  `;
+
+  // Anual Line
+  const mzShow = mzFilter ? [mzFilter] : ['Norte','Centro','Sur','Austral'];
+  makeChart('nacAnualChart','line',{
+    labels: D.anios,
+    datasets: mzShow.map(mz=>({
+      label:mz, data:D.anios.map(a=>D.nacional.mz_year[mz][a]),
+      borderColor:MZ_COLORS[mz], backgroundColor:MZ_COLORS[mz]+'18',
+      borderWidth:2.5, pointRadius:4, pointBackgroundColor:MZ_COLORS[mz], tension:0.35, fill:false
+    }))
+  },{
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.y)}`}}},
+    scales:{x:{grid:{color:'#d6d1c920'}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+  });
+
+  // Donut
+  const yr = state.nacYear === 'Total' ? null : state.nacYear;
+  const donutVals = mzShow.map(mz => yr ? D.nacional.mz_year[mz][yr] : sumYears(D.nacional.mz_year[mz], D.anios));
+  makeChart('nacDonutChart','doughnut',{
+    labels:mzShow,
+    datasets:[{data:donutVals, backgroundColor:mzShow.map(m=>MZ_COLORS[m]), borderColor:'#fff', borderWidth:3, hoverOffset:8}]
+  },{
+    cutout:'60%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.label}: ${fK(c.parsed)}`}}},
+    scales:{x:{display:false},y:{display:false}}
+  });
+
+  // Mensual
+  const mesVals = D.meses.map((_,i) => ys.reduce((s,y)=>s+(D.nacional.mes_by_year[y]?.[i]||0),0));
+  makeChart('nacMesChart','bar',{
+    labels:D.meses,
+    datasets:[{
+      label:'Miles de viajes', data:mesVals,
+      backgroundColor:mesVals.map((_,i)=>(i<=1||i===11)?D.C.red:(i===6?D.C.teal+'bb':D.C.Norte+'44')),
+      borderRadius:3,borderSkipped:false
+    }]
+  },{
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+  });
+
+  // Verano/Invierno — use top dests of first selected year
+  const yrRef = ys[0];
+  const dests8 = (D.nacional.top_dest_by_year[yrRef]||D.nacional.top_dest_by_year['2023']).slice(0,8);
+  makeChart('nacViChart','bar',{
+    labels: dests8.map(d=>d.d.length>18?d.d.slice(0,16)+'…':d.d),
+    datasets:[
+      {label:'Verano',data:dests8.map(d=>d.ve),backgroundColor:D.C.red,borderRadius:3,borderSkipped:'bottom'},
+      {label:'Invierno',data:dests8.map(d=>d.i),backgroundColor:D.C.teal+'bb',borderRadius:3,borderSkipped:'bottom'}
+    ]
+  },{
+    indexAxis:'y',
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.x)}`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}},y:{grid:{display:false}}}
+  });
+
+  // Top destinos list
+  const topData = D.nacional.top_dest_by_year[yrRef]||D.nacional.top_dest_by_year['2023'];
+  const maxV = topData[0].v;
+  const listEl = document.getElementById('nacDestList');
+  listEl.innerHTML = '';
+  topData.slice(0,10).forEach((d,i)=>{
+    const pct = (d.v/maxV*100).toFixed(0);
+    const col = MZ_COLORS[d.mz]||'#90a4ae';
+    listEl.innerHTML += `<div class="dest-item">
+      <span class="dest-rk">${String(i+1).padStart(2,'0')}</span>
+      <div><div class="dest-name">${d.d}</div><div class="dest-sub">${d.reg} <span style="color:${col};font-weight:600">· ${d.mz}</span></div></div>
+      <div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="bar-val">${fK(d.v)}</div></div>
+    </div>`;
+  });
+
+  // Top dest comp chart
+  makeChart('nacDestChart','bar',{
+    labels: topData.slice(0,8).map(d=>d.d.length>20?d.d.slice(0,18)+'…':d.d),
+    datasets:[
+      {label:'Verano',data:topData.slice(0,8).map(d=>d.ve),backgroundColor:D.C.red,borderRadius:3,borderSkipped:'bottom'},
+      {label:'Invierno',data:topData.slice(0,8).map(d=>d.i),backgroundColor:D.C.teal+'bb',borderRadius:3,borderSkipped:'bottom'}
+    ]
+  },{
+    indexAxis:'y',
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.x)}`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  });
+
+  // Heatmap
+  buildHeatmap('nacHeat', mzFilter ? [mzFilter] : ['Norte','Centro','Sur','Austral']);
+}
+
+// ══════════════════════════════════
+// COQUIMBO DATA
+// ══════════════════════════════════
+const COQ = {
+  anios: ['2019','2020','2021','2022','2023','2024','2025'],
+  reg_emisoras: [
+    {r:'Metropolitana de Santiago',v:9068.2},{r:'Coquimbo',v:8248.3},{r:'Valparaíso',v:2892.8},
+    {r:'Atacama',v:1956.6},{r:'Antofagasta',v:1289.3},{r:"O'Higgins",v:499.1},
+    {r:'Maule',v:274.1},{r:'Biobío',v:255.9},{r:'Tarapacá',v:218.6},
+    {r:'La Araucanía',v:122.9},{r:'Los Lagos',v:102.7},{r:'Arica y Parinacota',v:90.6},
+    {r:'Ñuble',v:86.1},{r:'Los Ríos',v:45.2},{r:'Magallanes',v:26.8},{r:'Aysén',v:9.7}
+  ],
+  com_emisoras: [
+    {c:'La Serena',reg:'Coquimbo',v:2274.3},{c:'Coquimbo',reg:'Coquimbo',v:2050.6},
+    {c:'Ovalle',reg:'Coquimbo',v:1541.1},{c:'Copiapó',reg:'Atacama',v:973.2},
+    {c:'Antofagasta',reg:'Antofagasta',v:802.5},{c:'Puente Alto',reg:'RM',v:681.7},
+    {c:'Maipú',reg:'RM',v:659.6},{c:'Las Condes',reg:'RM',v:644.8},
+    {c:'Vallenar',reg:'Atacama',v:556.7},{c:'Santiago',reg:'RM',v:555.1},
+    {c:'Viña del Mar',reg:'Valparaíso',v:545.4},{c:'La Florida',reg:'RM',v:482.7},
+    {c:'Ñuñoa',reg:'RM',v:435.7},{c:'Vicuña',reg:'Coquimbo',v:428.0},{c:'Valparaíso',reg:'Valparaíso',v:374.4}
+  ],
+  dest_tur: {
+    list: ['La Serena - Coquimbo','Litoral Los Vilos - Pichidangui/ Quilimarí','Valle del Elqui','Ovalle - P.N. Fray Jorge','Valle Choapa','Resto región Coquimbo','Valles del Limarí','Punta de Choros - R.N. Pingüino de Humboldt','Antakari'],
+    total: {'La Serena - Coquimbo':12594.4,'Litoral Los Vilos - Pichidangui/ Quilimarí':3166.2,'Valle del Elqui':2328.9,'Ovalle - P.N. Fray Jorge':2208.1,'Valle Choapa':1406.9,'Resto región Coquimbo':1207.2,'Valles del Limarí':975.1,'Punta de Choros - R.N. Pingüino de Humboldt':834.2,'Antakari':466.0},
+    by_year: {
+      'La Serena - Coquimbo':         {'2019':1855.4,'2020':1352.9,'2021':1660.5,'2022':1959.7,'2023':1951.0,'2024':1991.9,'2025':1823.1},
+      'Litoral Los Vilos - Pichidangui/ Quilimarí':{'2019':458.0,'2020':390.1,'2021':388.6,'2022':452.0,'2023':453.2,'2024':522.4,'2025':501.7},
+      'Valle del Elqui':               {'2019':320.3,'2020':262.1,'2021':341.4,'2022':353.9,'2023':336.3,'2024':391.7,'2025':323.2},
+      'Ovalle - P.N. Fray Jorge':      {'2019':311.8,'2020':224.7,'2021':292.2,'2022':323.0,'2023':323.2,'2024':388.1,'2025':345.0},
+      'Valle Choapa':                  {'2019':215.8,'2020':166.1,'2021':186.9,'2022':219.2,'2023':215.0,'2024':225.1,'2025':178.7},
+      'Resto región Coquimbo':         {'2019':158.9,'2020':120.7,'2021':161.1,'2022':190.1,'2023':198.5,'2024':209.1,'2025':168.8},
+      'Valles del Limarí':             {'2019':148.3,'2020':110.0,'2021':135.8,'2022':148.4,'2023':152.0,'2024':159.7,'2025':120.9},
+      'Punta de Choros - R.N. Pingüino de Humboldt':{'2019':98.6,'2020':80.9,'2021':111.1,'2022':121.3,'2023':128.3,'2024':163.7,'2025':130.2},
+      'Antakari':                      {'2019':71.3,'2020':52.0,'2021':62.1,'2022':69.9,'2023':72.8,'2024':80.0,'2025':57.9}
+    }
+  },
+  com_dest: {
+    list: ['La Serena','Coquimbo','Los Vilos','Ovalle','Vicuña','Canela','Paihuano','La Higuera','Salamanca','Illapel','Monte Patria','Combarbalá','Río Hurtado','Punitaqui','Andacollo'],
+    total: {'La Serena':6347.4,'Coquimbo':6247.0,'Los Vilos':3166.2,'Ovalle':2208.1,'Vicuña':1426.1,'Canela':946.2,'Paihuano':902.8,'La Higuera':834.2,'Salamanca':773.1,'Illapel':633.8,'Monte Patria':572.2,'Combarbalá':402.9,'Río Hurtado':352.6,'Punitaqui':261.0,'Andacollo':113.4},
+    by_year: {
+      'La Serena':   {'2019':993.4,'2020':724.6,'2021':888.9,'2022':1049.8,'2023':1044.9,'2024':1067.1,'2025':976.1},
+      'Coquimbo':    {'2019':862.0,'2020':628.3,'2021':771.6,'2022':909.9,'2023':906.1,'2024':924.8,'2025':847.0},
+      'Los Vilos':   {'2019':458.0,'2020':390.1,'2021':388.6,'2022':452.0,'2023':453.2,'2024':522.4,'2025':501.7},
+      'Ovalle':      {'2019':311.8,'2020':224.7,'2021':292.2,'2022':323.0,'2023':323.2,'2024':388.1,'2025':345.0},
+      'Vicuña':      {'2019':203.4,'2020':167.1,'2021':217.7,'2022':225.6,'2023':214.3,'2024':249.5,'2025':205.9},
+      'Canela':      {'2019':134.8,'2020':103.5,'2021':117.0,'2022':137.3,'2023':134.8,'2024':141.1,'2025':112.0},
+      'Paihuano':    {'2019':116.9,'2020':95.0,'2021':123.7,'2022':128.3,'2023':122.0,'2024':142.2,'2025':117.3},
+      'La Higuera':  {'2019':98.6,'2020':80.9,'2021':111.1,'2022':121.3,'2023':128.3,'2024':163.7,'2025':130.2},
+      'Salamanca':   {'2019':110.0,'2020':84.8,'2021':95.6,'2022':111.7,'2023':109.6,'2024':114.7,'2025':91.2},
+      'Illapel':     {'2019':90.4,'2020':69.7,'2021':78.4,'2022':91.4,'2023':89.9,'2024':93.9,'2025':74.6},
+      'Monte Patria':{'2019':81.5,'2020':62.9,'2021':72.3,'2022':81.8,'2023':81.6,'2024':84.8,'2025':66.1},
+      'Combarbalá':  {'2019':57.4,'2020':44.1,'2021':54.4,'2022':59.4,'2023':60.8,'2024':63.9,'2025':48.4},
+      'Río Hurtado': {'2019':50.2,'2020':38.6,'2021':43.4,'2022':50.2,'2023':50.3,'2024':52.7,'2025':44.5},
+      'Punitaqui':   {'2019':37.2,'2020':28.3,'2021':35.8,'2022':39.2,'2023':39.1,'2024':41.5,'2025':32.5},
+      'Andacollo':   {'2019':16.2,'2020':12.0,'2021':14.8,'2022':16.2,'2023':16.5,'2024':17.0,'2025':13.8}
+    },
+    com_to_dest: {
+      'La Serena':'La Serena - Coquimbo','Coquimbo':'La Serena - Coquimbo',
+      'Los Vilos':'Litoral Los Vilos - Pichidangui/ Quilimarí',
+      'Ovalle':'Ovalle - P.N. Fray Jorge',
+      'Vicuña':'Valle del Elqui','Paihuano':'Valle del Elqui',
+      'Canela':'Resto región Coquimbo','Punitaqui':'Resto región Coquimbo',
+      'La Higuera':'Punta de Choros - R.N. Pingüino de Humboldt',
+      'Salamanca':'Valle Choapa','Illapel':'Valle Choapa',
+      'Monte Patria':'Valles del Limarí','Combarbalá':'Valles del Limarí','Río Hurtado':'Antakari',
+      'Andacollo':'Antakari'
+    }
+  },
+  intra: {
+    com_dest: [
+      {c:'Coquimbo',v:1234.2},{c:'Ovalle',v:1171.9},{c:'La Serena',v:1082.8},
+      {c:'Vicuña',v:1081.9},{c:'Paihuano',v:644.3},{c:'Los Vilos',v:610.2},
+      {c:'La Higuera',v:510.4},{c:'Canela',v:425.3},{c:'Monte Patria',v:331.8},
+      {c:'Río Hurtado',v:286.9},{c:'Combarbalá',v:253.7},{c:'Illapel',v:234.9},
+      {c:'Salamanca',v:213.6}
+    ],
+    dest_tur: [
+      {d:'La Serena - Coquimbo',v:2317.0},{d:'Valle del Elqui',v:1726.2},
+      {d:'Ovalle - P.N. Fray Jorge',v:1171.9},{d:'Litoral Los Vilos - Pichidangui/ Quilimarí',v:610.2},
+      {d:'Valles del Limarí',v:585.4},{d:'Resto región Coquimbo',v:564.1},
+      {d:'Punta de Choros - R.N. Pingüino de Humboldt',v:510.4},
+      {d:'Valle Choapa',v:448.6},{d:'Antakari',v:314.6}
+    ]
+  },
+  mes_by_year: {
+    '2019':[455.0,440.0,270.0,185.0,170.0,185.0,260.0,210.0,250.0,265.0,195.0,305.0],
+    '2020':[460.0,430.0,180.0,85.0,70.0,80.0,170.0,165.0,200.0,215.0,150.0,245.0],
+    '2021':[440.0,415.0,245.0,165.0,152.0,165.0,238.0,193.0,232.0,248.0,180.0,282.0],
+    '2022':[525.0,510.0,310.0,215.0,198.0,215.0,302.0,244.0,286.0,305.0,223.0,352.0],
+    '2023':[535.0,520.0,318.0,220.0,202.0,220.0,309.0,250.0,293.0,312.0,228.0,360.0],
+    '2024':[554.0,538.0,329.0,228.0,209.0,228.0,320.0,259.0,303.0,323.0,236.0,373.0],
+    '2025':[476.0,462.0,283.0,196.0,179.0,196.0,275.0,222.0,260.0,277.0,202.0,320.0]
+  },
+  tipo: {intra:8248.3, inter:16938.6},
+  total_by_year: {'2019':3635.0,'2020':2590.0,'2021':3162.3,'2022':3637.4,'2023':3830.3,'2024':4059.9,'2025':3548.0}
+};
+
+// ══════════════════════════════════
+// COQUIMBO RENDER
+// ══════════════════════════════════
+function renderCoquimbo() {
+  const ys = getYears(state.coqYear);
+  const vista = document.getElementById('coqVistaSel').value; // 'dest_tur' or 'com_dest'
+  const isDestTur = vista === 'dest_tur';
+
+  // Dynamic labels
+  document.getElementById('coqDestTitleLabel').textContent = isDestTur ? '¿Hacia qué destinos turísticos viajan?' : '¿Hacia qué comunas viajan?';
+  document.getElementById('coqDestSubLabel').textContent = isDestTur ? 'Volumen por destino turístico SERNATUR' : 'Volumen por comuna de destino';
+  document.getElementById('coqRankTitle').textContent = isDestTur ? 'Ranking de destinos turísticos' : 'Ranking de comunas destino';
+  document.getElementById('coqRankNote').textContent = `Miles de viajes — ${state.coqYear === 'Total' ? 'acumulado' : state.coqYear}`;
+  document.getElementById('coqIntraTitle').textContent = isDestTur ? 'Destinos turísticos — turista local' : 'Comunas destino — turista local';
+
+  // ── KPIs
+  const totalV = ys.reduce((s,y) => s + (COQ.total_by_year[y]||0), 0);
+  document.getElementById('coqKpis').innerHTML = `
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--teal-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="kpi-val">${fmtV(totalV)}</div><div class="kpi-lbl">Viajes recibidos</div><div class="kpi-sub">${state.coqYear === 'Total' ? 'Acumulado 2019–2025' : state.coqYear}</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--red-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--red)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="kpi-val">${isDestTur ? '9' : '15'}</div><div class="kpi-lbl">${isDestTur ? 'Destinos turísticos' : 'Comunas destino'}</div><div class="kpi-sub">Cobertura regional</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+      <div class="kpi-val">67.2<sup>%</sup></div><div class="kpi-lbl">Flujos externos</div><div class="kpi-sub">De otras regiones</div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#ede8fc"><svg viewBox="0 0 24 24" style="stroke:var(--violet)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="kpi-val">Ene</div><div class="kpi-lbl">Mes pico</div><div class="kpi-sub">~15% del total anual</div></div>
+  `;
+
+  // ── Regiones emisoras
+  makeChart('coqRegOrigChart','bar',{
+    labels: COQ.reg_emisoras.map(r => r.r.length > 18 ? r.r.replace('Metropolitana de Santiago','RM').replace('Libertador General Bernardo ','') : r.r),
+    datasets:[{
+      label:'Miles de viajes',
+      data: COQ.reg_emisoras.map(r=>r.v),
+      backgroundColor: COQ.reg_emisoras.map(r => r.r==='Coquimbo'?D.C.teal : r.r==='Metropolitana de Santiago'?D.C.red+'cc' : D.C.Norte+'55'),
+      borderRadius:3,borderSkipped:'bottom'
+    }]
+  },{
+    indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtV(c.parsed.x)}`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  });
+
+  // ── Comunas emisoras (destacar Coquimbo en teal)
+  makeChart('coqComOrigChart','bar',{
+    labels: COQ.com_emisoras.map(c=>c.c),
+    datasets:[{
+      label:'Miles de viajes',
+      data: COQ.com_emisoras.map(c=>c.v),
+      backgroundColor: COQ.com_emisoras.map(c => c.reg==='Coquimbo'?D.C.teal : c.reg==='RM'?D.C.red+'99' : D.C.Norte+'55'),
+      borderRadius:3,borderSkipped:'bottom'
+    }]
+  },{
+    indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
+      const item = COQ.com_emisoras[c.dataIndex];
+      return ` ${item.c} (${item.reg}): ${fmtV(c.parsed.x)}`;
+    }}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  });
+
+  // ── Ranking list + Anual chart
+  const src = isDestTur ? COQ.dest_tur : COQ.com_dest;
+  const items = src.list.map(k => ({
+    label: k,
+    total: src.total[k],
+    yr_val: ys.reduce((s,y) => s + (src.by_year[k]?.[y]||0), 0)
+  })).sort((a,b) => b.yr_val - a.yr_val);
+
+  const maxV = items[0]?.yr_val || 1;
+  const DEST_COLORS_MAP = {
+    'La Serena - Coquimbo':'#bf3517','La Serena':'#bf3517','Coquimbo':'#e85d38',
+    'Litoral Los Vilos - Pichidangui/ Quilimarí':'#0c6b72','Los Vilos':'#0c6b72',
+    'Valle del Elqui':'#1a8f99','Vicuña':'#1a8f99','Paihuano':'#1a8f99',
+    'Ovalle - P.N. Fray Jorge':'#2e7d44','Ovalle':'#2e7d44',
+    'Valle Choapa':'#5646c4','Salamanca':'#5646c4','Illapel':'#5646c4',
+    'Resto región Coquimbo':'#90a4ae','Canela':'#90a4ae','Punitaqui':'#90a4ae',
+    'Valles del Limarí':'#b5870f','Monte Patria':'#b5870f','Combarbalá':'#b5870f',
+    'Punta de Choros - R.N. Pingüino de Humboldt':'#e85d38','La Higuera':'#e85d38',
+    'Antakari':'#7e57c2','Río Hurtado':'#7e57c2','Andacollo':'#7e57c2'
+  };
+
+  const listEl = document.getElementById('coqDestList');
+  listEl.innerHTML = '';
+  items.forEach((item,i) => {
+    const col = DEST_COLORS_MAP[item.label] || '#90a4ae';
+    const pct = (item.yr_val/maxV*100).toFixed(0);
+    const sub = isDestTur ? 'Destino turístico' : (COQ.com_dest.com_to_dest[item.label]||'');
+    listEl.innerHTML += `<div class="dest-item">
+      <span class="dest-rk">${String(i+1).padStart(2,'0')}</span>
+      <div><div class="dest-name">${item.label}</div><div class="dest-sub">${sub}</div></div>
+      <div class="bar-cell">
+        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <div class="bar-val">${fmtV(item.yr_val)}</div>
+      </div>
+    </div>`;
+  });
+
+  // Anual line chart
+  const topShow = items.slice(0, isDestTur ? 9 : 8);
+  makeChart('coqAnualChart','line',{
+    labels: D.anios,
+    datasets: topShow.map(item => ({
+      label: item.label.length > 22 ? item.label.slice(0,20)+'…' : item.label,
+      data: D.anios.map(a => src.by_year[item.label]?.[a]||0),
+      borderColor: DEST_COLORS_MAP[item.label]||'#90a4ae',
+      backgroundColor:'transparent',
+      borderWidth: 2, pointRadius: 3, tension: 0.3
+    }))
+  },{
+    plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:8}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmtV(c.parsed.y)}`}}},
+    scales:{x:{grid:{color:'#d6d1c920'}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v)}}}
+  });
+
+  // ── Intrarregional
+  const intraData = isDestTur ? COQ.intra.dest_tur : COQ.intra.com_dest;
+  const intraLabels = intraData.map(x => (x.d||x.c).length > 22 ? (x.d||x.c).slice(0,20)+'…' : (x.d||x.c));
+  const intraVals = intraData.map(x=>x.v);
+  const intraMaxV = intraVals[0];
+  makeChart('coqIntraChart','bar',{
+    labels: intraLabels,
+    datasets:[{
+      label:'Miles de viajes (intrarregional)',
+      data: intraVals,
+      backgroundColor: intraData.map((x,i) => {
+        const key = x.d||x.c;
+        return (DEST_COLORS_MAP[key]||'#90a4ae') + (i===0?'':'cc');
+      }),
+      borderRadius:3,borderSkipped:'bottom'
+    }]
+  },{
+    indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Intrarregional: ${fmtV(c.parsed.x)}`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  });
+
+  // ── Tipo flujo donut
+  makeChart('coqTipoChart','doughnut',{
+    labels:['Intrarregional','Interregional'],
+    datasets:[{data:[COQ.tipo.intra,COQ.tipo.inter],backgroundColor:[D.C.teal,D.C.red],borderColor:'#fff',borderWidth:3,hoverOffset:6}]
+  },{
+    cutout:'55%',
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.label}: ${fmtV(c.parsed)}`}}},
+    scales:{x:{display:false},y:{display:false}}
+  });
+
+  // ── Mensual
+  const mesVals = D.meses.map((_,i) => ys.reduce((s,y)=>s+(COQ.mes_by_year[y]?.[i]||0),0));
+  makeChart('coqMesChart','bar',{
+    labels: D.meses,
+    datasets:[{
+      label:'Miles de viajes',data:mesVals,
+      backgroundColor: mesVals.map((_,i) => (i<=1||i===11)?D.C.teal:(i===6?D.C.gold+'bb':D.C.teal+'40')),
+      borderRadius:3,borderSkipped:false
+    }]
+  },{
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtV(c.parsed.y)}`}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v)}}}
+  });
+}
+
+// ══════════════════════════════════
+// ZOIT
+// ══════════════════════════════════
+function renderZoit() {
+  const ys = getYears(state.zoitYear);
+  const yr = state.zoitYear === 'Total' ? '2023' : state.zoitYear;
+
+  function buildZoitKpis(containerId, key) {
+    const z = D.zoit[key];
+    const totalV = sumYears(z.by_year, ys);
+    const ratio = (z.ve/(z.iv||1)).toFixed(2);
+    const el = document.getElementById(containerId);
+    el.innerHTML = `
+      <div class="kpi-card" style="border:1px solid var(--rule)"><div class="kpi-icon" style="background:var(--teal-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="kpi-val">${fK(totalV)}</div><div class="kpi-lbl">Viajes recibidos</div></div>
+      <div class="kpi-card" style="border:1px solid var(--rule)"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+        <div class="kpi-val">${ratio}<sup>x</sup></div><div class="kpi-lbl">Ratio V/I</div></div>
+    `;
+  }
+  buildZoitKpis('elquiKpis','elqui');
+  buildZoitKpis('pichiKpis','pichi');
+
+  // Anuales individuales
+  function barAnual(chartId, key, color) {
+    const z = D.zoit[key];
+    makeChart(chartId,'bar',{
+      labels:D.anios,
+      datasets:[{
+        label:'Miles de viajes',
+        data:D.anios.map(a=>z.by_year[a]||0),
+        backgroundColor:D.anios.map(a=>a===yr?color:color+'55'),
+        borderRadius:4,borderSkipped:false
+      }]
+    },{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+    });
+  }
+  barAnual('elquiAnualChart','elqui',D.C.teal);
+  barAnual('pichiAnualChart','pichi',D.C.red);
+
+  // Comparativa índice (base 2019=100)
+  const e19 = D.zoit.elqui.by_year['2019'];
+  const p19 = D.zoit.pichi.by_year['2019'];
+  makeChart('zoitCompChart','line',{
+    labels:D.anios,
+    datasets:[
+      {label:'Valle del Elqui',data:D.anios.map(a=>Math.round(D.zoit.elqui.by_year[a]/e19*100)),borderColor:D.C.teal,backgroundColor:D.C.teal+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.teal,tension:0.3,fill:false},
+      {label:'Litoral Pichidangui',data:D.anios.map(a=>Math.round(D.zoit.pichi.by_year[a]/p19*100)),borderColor:D.C.red,backgroundColor:D.C.red+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.red,tension:0.3,fill:false}
+    ]
+  },{
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}`}}},
+    scales:{
+      x:{grid:{color:'#d6d1c920'}},
+      y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>v+'',font:{size:11}},title:{display:true,text:'Índice base 2019=100',font:{size:10,family:"'DM Mono'"}}}
+    }
+  });
+
+  // Mensuales ZOIT
+  function mesChart(chartId, key, color) {
+    const z = D.zoit[key];
+    const mesVals = D.meses.map((_,i)=>ys.reduce((s,y)=>s+(z.mes_by_year[y]?.[i]||0),0));
+    makeChart(chartId,'line',{
+      labels:D.meses,
+      datasets:[{
+        label:'Miles de viajes',data:mesVals,
+        borderColor:color,backgroundColor:color+'20',
+        borderWidth:2,pointRadius:3,tension:0.4,fill:true
+      }]
+    },{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+    });
+  }
+  mesChart('elquiMesChart','elqui',D.C.teal);
+  mesChart('pichiMesChart','pichi',D.C.red);
+
+  // Orígenes
+  function origChart(chartId, key, color) {
+    const z = D.zoit[key];
+    makeChart(chartId,'bar',{
+      labels:z.top_orig.map(o=>o.c),
+      datasets:[{
+        label:'Miles de viajes',data:z.top_orig.map(o=>o.v),
+        backgroundColor:z.top_orig.map((_,i)=>i===0?color:i===1?color+'cc':color+'55'),
+        borderRadius:3,borderSkipped:'bottom'
+      }]
+    },{
+      indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.x)}`}}},
+      scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}},y:{grid:{display:false},ticks:{font:{size:11}}}}
+    });
+  }
+  origChart('elquiOrigChart','elqui',D.C.teal);
+  origChart('pichiOrigChart','pichi',D.C.red);
+}
+
+// ══════════════════════════════════
+// HEATMAP
+// ══════════════════════════════════
+function buildHeatmap(containerId, mzList) {
+  const heat = {
+    Norte:   [2.8,2.7,1.8,1.2,1.0,1.1,1.6,1.4,1.5,1.6,1.3,2.0],
+    Centro:  [3.0,2.9,1.5,1.0,0.9,1.0,1.3,1.1,1.4,1.5,1.2,1.8],
+    Sur:     [3.2,3.1,1.4,0.9,0.8,0.9,2.1,1.3,1.2,1.3,1.0,1.5],
+    Austral: [3.4,3.2,1.3,0.8,0.7,0.8,2.3,1.4,1.1,1.2,0.9,1.3]
+  };
+  const allV = mzList.flatMap(mz=>heat[mz]||[]);
+  const minV=Math.min(...allV), maxV=Math.max(...allV);
+  function col(v){
+    const t=(v-minV)/(maxV-minV);
+    return `rgb(${Math.round(248-t*233)},${Math.round(246-t*136)},${Math.round(241-t*124)})`;
+  }
+  function tc(v){return (v-minV)/(maxV-minV)>0.55?'#fff':'#0d1b2a'}
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const tbl = document.createElement('table'); tbl.className='htable';
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th></th>'+D.meses.map(m=>`<th>${m}</th>`).join('')+'</tr>';
+  tbl.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  mzList.forEach(mz=>{
+    if(!heat[mz]) return;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="htable hlbl" style="color:${MZ_COLORS[mz]};background:transparent">${mz}</td>`+
+      heat[mz].map((v,i)=>`<td style="background:${col(v)};color:${tc(v)}" title="${D.meses[i]}: ${v}">${v.toFixed(1)}</td>`).join('');
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  el.appendChild(tbl);
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function init() {
+  // Populate filters
+  const regSel = document.getElementById('nacRegionSel');
+  ['Arica y Parinacota','Tarapacá','Antofagasta','Atacama','Coquimbo','Valparaíso','Metropolitana de Santiago','Libertador General Bernardo O\'Higgins','Maule','Ñuble','Biobío','La Araucanía','Los Ríos','Los Lagos','Aysén del General Carlos Ibáñez del Campo','Magallanes y de la Antártica Chilena']
+    .forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;regSel.appendChild(o);});
+
+  // Build pills
+  buildPills('nacYearPills','nacYear',renderNacional);
+  buildPills('coqYearPills','coqYear',renderCoquimbo);
+  buildPills('zoitYearPills','zoitYear',renderZoit);
+  // Initial renders
+  renderNacional();
+  renderCoquimbo();
+  renderZoit();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

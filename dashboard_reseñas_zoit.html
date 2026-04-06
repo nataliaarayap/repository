@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observatorio Turístico ZOIT Coquimbo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1e3a5f;--navy-d:#142740;--navy-m:#2a4f7c;--teal:#2a8c7a;--teal-l:#e6f4f1;--coral:#e05c3a;--coral-l:#fdf0ec;--gold:#c49a1a;--gold-l:#fdf6e3;--bg:#f7f6f2;--bg2:#efede7;--white:#fff;--border:#e2ddd6;--border2:#ccc8c0;--text:#1a1814;--text2:#3d3a34;--muted:#7a7570;--sw:210px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:13px;}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--navy-d);display:flex;flex-direction:column;overflow-y:auto;z-index:10;}
+.sb-brand{padding:22px 20px 16px;}
+.sb-lbl{font-size:0.6rem;letter-spacing:.12em;text-transform:uppercase;color:#5a7a9a;margin-bottom:5px;}
+.sb-title{font-family:'DM Serif Display',serif;font-size:1rem;line-height:1.3;color:#e8f0f8;}
+.sb-sub{font-size:0.7rem;color:#5a7a9a;margin-top:3px;}
+.sb-div{height:1px;background:rgba(255,255,255,.08);margin:8px 0 12px;}
+.sb-filter-lbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#5a7a9a;padding:0 20px;margin-bottom:7px;}
+.sb-zoit{display:flex;gap:5px;padding:0 20px;margin-bottom:14px;flex-wrap:wrap;}
+.zb{padding:5px 9px;border-radius:4px;font-size:.7rem;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.zb-all{background:var(--coral);color:#fff;}
+.zb-e{background:transparent;color:#8aaecc;border:1px solid #2a4f7c;}
+.zb-p{background:transparent;color:#8aaecc;border:1px solid #2a4f7c;}
+.zb-e.ae{background:var(--navy-m);color:#fff;border-color:var(--navy-m);}
+.zb-p.ap{background:var(--teal);color:#fff;border-color:var(--teal);}
+.sb-nav-lbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#5a7a9a;padding:0 20px;margin-bottom:5px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;font-size:.78rem;color:#8aaecc;transition:all .15s;border-left:3px solid transparent;}
+.ni:hover{background:rgba(255,255,255,.04);color:#c8dff0;}
+.ni.active{background:rgba(255,255,255,.07);color:#fff;border-left-color:var(--coral);font-weight:500;}
+.ni svg{width:13px;height:13px;opacity:.7;flex-shrink:0;}
+.ni.active svg{opacity:1;}
+.sb-foot{margin-top:auto;padding:14px 20px;font-size:.6rem;color:#3a5070;line-height:1.6;border-top:1px solid rgba(255,255,255,.06);}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tb-title{font-size:.92rem;font-weight:600;color:var(--text);}
+.tb-pills{display:flex;gap:7px;}
+.tp{font-size:.68rem;font-weight:500;padding:3px 11px;border-radius:20px;}
+.tp-n{background:#eef2f7;color:var(--navy);}
+.tp-z{background:var(--coral-l);color:var(--coral);border:1px solid #f5c4b5;}
+.tp-c{background:var(--teal-l);color:var(--teal);border:1px solid #b5ddd8;}
+.content{flex:1;overflow-y:auto;padding:26px 28px;}
+.section{display:none;}
+.section.active{display:block;animation:fu .22s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.sec-hd{margin-bottom:22px;}
+.sec-n{font-size:2.6rem;font-family:'DM Serif Display',serif;color:var(--border2);line-height:1;display:inline-block;margin-right:14px;vertical-align:middle;}
+.sec-tx{display:inline-block;vertical-align:middle;}
+.sec-h{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--navy);font-weight:400;}
+.sec-s{font-size:.78rem;color:var(--muted);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.kpi{background:var(--white);border:1px solid var(--border);padding:16px 18px;border-radius:5px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kn::before{background:var(--navy);}
+.kt::before{background:var(--teal);}
+.kc::before{background:var(--coral);}
+.kg::before{background:var(--gold);}
+.kpi-ey{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.kpi-v{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--text);line-height:1;}
+.kpi-s{font-size:.7rem;color:var(--muted);margin-top:4px;}
+.kpi-tag{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:3px;font-size:.63rem;font-weight:500;}
+.kp{background:#e6f4ee;color:#1a6b3c;}
+.kng{background:#fde8e8;color:#8b1a1a;}
+.knu{background:var(--gold-l);color:#7a5c00;}
+.ki{background:#e8f0f8;color:var(--navy);}
+.card{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:18px 20px;}
+.ct{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ct::after{content:'';flex:1;height:1px;background:var(--border);}
+.ch{position:relative;}
+.ch180{height:180px;}.ch240{height:240px;}.ch300{height:300px;}.ch360{height:360px;}.ch400{height:400px;}
+.ins{background:var(--teal-l);border:1px solid #b5ddd8;border-left:3px solid var(--teal);border-radius:4px;padding:9px 13px;margin-top:10px;font-size:.76rem;line-height:1.6;color:var(--text2);}
+.ins strong{color:var(--navy);font-weight:600;}
+.ins.warn{background:var(--gold-l);border-color:#e8c96a;border-left-color:var(--gold);}
+.ins.alert{background:var(--coral-l);border-color:#f5c4b5;border-left-color:var(--coral);}
+.dt{width:100%;border-collapse:collapse;font-size:.79rem;}
+.dt thead tr{border-bottom:2px solid var(--border2);}
+.dt th{font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:7px 9px;text-align:left;font-weight:500;}
+.dt td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.dt tbody tr:last-child td{border-bottom:none;}
+.dt tbody tr:hover td{background:var(--bg);}
+.bdg{display:inline-block;padding:2px 7px;border-radius:3px;font-size:.61rem;font-weight:500;}
+.bn{background:#e8f0f8;color:var(--navy);}
+.bt{background:var(--teal-l);color:var(--teal);}
+.bc{background:var(--coral-l);color:var(--coral);}
+.bg{background:var(--gold-l);color:#7a5c00;}
+.bpos{background:#e6f4ee;color:#1a6b3c;}
+.bneg{background:#fde8e8;color:#8b1a1a;}
+.bnu{background:var(--bg2);color:var(--muted);}
+.mbar{height:4px;background:var(--bg2);border-radius:2px;margin-top:3px;}
+.mbar-f{height:100%;border-radius:2px;}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted);}
+.leg-d{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.mad-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.mad-item:last-child{border-bottom:none;}
+.mad-l{font-size:.78rem;font-weight:500;width:100px;flex-shrink:0;}
+.mad-z{font-size:.58rem;color:var(--muted);width:40px;flex-shrink:0;}
+.mad-bw{flex:1;height:7px;background:var(--bg2);border-radius:2px;overflow:hidden;}
+.mad-b{height:100%;border-radius:2px;transition:width .6s;}
+.mad-sc{font-family:'DM Serif Display',serif;font-size:.95rem;width:34px;text-align:right;flex-shrink:0;}
+.mad-ct{width:56px;flex-shrink:0;}
+.bi{padding:10px 12px;border-bottom:1px solid var(--border);border-left:3px solid var(--border);}
+.bi:last-child{border-bottom:none;}
+.bi.be{border-left-color:var(--navy-m);}
+.bi.bp{border-left-color:var(--teal);}
+.bi-meta{display:flex;gap:7px;align-items:center;margin-bottom:4px;flex-wrap:wrap;}
+.bi-lugar{font-size:.76rem;font-weight:600;color:var(--text2);}
+.bi-loc{font-size:.63rem;color:var(--muted);}
+.bi-q{font-size:.78rem;font-style:italic;color:var(--text2);line-height:1.55;}
+.brscroll{max-height:420px;overflow-y:auto;}
+.mc{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:20px 22px;margin-bottom:12px;}
+.mt{font-family:'DM Serif Display',serif;font-size:.98rem;color:var(--navy);margin-bottom:9px;font-weight:400;}
+.mp{font-size:.8rem;line-height:1.75;color:var(--text2);}
+.pipe{display:flex;align-items:center;flex-wrap:wrap;margin:12px 0;}
+.pn{background:var(--bg2);border:1px solid var(--border2);padding:6px 12px;font-size:.72rem;font-weight:500;color:var(--text2);}
+.pn:first-child{border-left:3px solid var(--navy);}
+.pa{color:var(--border2);padding:0 7px;font-size:.9rem;}
+.sr{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:12px;}
+.si{background:var(--white);padding:12px 14px;}
+.sn{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--navy);}
+.sd{font-size:.7rem;color:var(--muted);margin-top:2px;}
+.li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.li:last-child{border-bottom:none;}
+.lc{font-size:.62rem;font-weight:600;color:var(--gold);background:var(--gold-l);padding:2px 6px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.lt{font-size:.78rem;line-height:1.65;color:var(--text2);}
+.mb12{margin-bottom:12px;}
+.bf-row{display:flex;gap:7px;margin-bottom:10px;}
+.bf{padding:4px 11px;border-radius:3px;font-size:.7rem;font-weight:500;border:1px solid var(--border);background:var(--white);color:var(--text2);cursor:pointer;transition:all .15s;}
+.bf:hover{border-color:var(--navy);color:var(--navy);}
+.bf.fa{background:var(--navy);color:#fff;border-color:var(--navy);}
+.bf.fe{background:var(--navy-m);color:#fff;border-color:var(--navy-m);}
+.bf.fp{background:var(--teal);color:#fff;border-color:var(--teal);}
+.note{font-size:.72rem;color:var(--muted);margin-top:9px;padding-top:9px;border-top:1px solid var(--border);line-height:1.6;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media(max-width:860px){.sidebar{display:none;}.g4,.g3,.g2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-lbl">UCN · ECIEM · BIP 40075888-0</div>
+    <div class="sb-title">Observatorio Turístico<br>ZOIT Coquimbo</div>
+    <div class="sb-sub">Análisis de Reseñas Digitales</div>
+  </div>
+  <div class="sb-div"></div>
+  <div class="sb-filter-lbl">Filtrar por ZOIT</div>
+  <div class="sb-zoit">
+    <button class="zb zb-all" id="zb-all" onclick="setZ('all')">Ambas</button>
+    <button class="zb zb-e" id="zb-e" onclick="setZ('VE')">Valle Elqui</button>
+    <button class="zb zb-p" id="zb-p" onclick="setZ('PQ')">Pichidangui</button>
+  </div>
+  <div class="sb-nav-lbl">Módulos</div>
+  <div class="ni active" onclick="go('m01',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v2H2zm0 4h8v2H2zm0 4h10v2H2z"/></svg>Metodología</div>
+  <div class="ni" onclick="go('m02',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h4v14H1zm5 5h4v9H6zm5-3h4v12h-4z"/></svg>Resumen General</div>
+  <div class="ni" onclick="go('m03',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z"/></svg>Atributos Valorados</div>
+  <div class="ni" onclick="go('m04',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C5.2 1 3 3.2 3 6c0 4 5 9 5 9s5-5 5-9c0-2.8-2.2-5-5-5zm0 7a2 2 0 110-4 2 2 0 010 4z"/></svg>Localidades</div>
+  <div class="ni" onclick="go('m05',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm-.5 2v4.3l3.2 1.9-.8 1.3L6.5 9V5h1z"/></svg>Madurez Turística</div>
+  <div class="ni" onclick="go('m06',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 14V6l4-4h6l4 4v8H1zm2-2h10V7H3v5zm3-9v2h4V3H6z"/></svg>Establecimientos</div>
+  <div class="ni" onclick="go('m07',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 14h14L8 1zm0 3l5 9H3l5-9zM7 8h2v3H7zm0 4h2v1H7z"/></svg>Brechas Detectadas</div>
+  <div class="ni" onclick="go('m08',this)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a3 3 0 100 6 3 3 0 000-6zm-5 9a5 5 0 0110 0v1H3v-1z"/></svg>Perfil del Visitante</div>
+  <div class="sb-foot">Fuente: Google Places API (New)<br>n = 1.318 reseñas · 24 localidades<br>Prototipo Fase I · 2025</div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tb-t">Metodología</div>
+    <div class="tb-pills">
+      <span class="tp tp-n" id="tp-n">N = 1.318 reseñas</span>
+      <span class="tp tp-z" id="tp-z">Ambas ZOIT</span>
+      <span class="tp tp-c">Análisis Reseñas · 2025</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- M01 METODOLOGÍA -->
+    <section id="m01" class="section active">
+      <div class="sec-hd"><span class="sec-n">01</span><span class="sec-tx"><div class="sec-h">Metodología y Encuadre</div><div class="sec-s">Fundamentos, pipeline y limitaciones del prototipo</div></span></div>
+      <div class="g2 mb12">
+        <div class="mc" style="margin:0">
+          <div class="mt">Propósito del análisis</div>
+          <p class="mp">Este módulo presenta resultados de un análisis exploratorio de información secundaria digital, sustentado en reseñas de visitantes publicadas en Google Maps para establecimientos turísticos de las dos ZOIT del proyecto: <strong>Valle del Elqui</strong> y <strong>Pichidangui–Quilimarí</strong>.</p>
+          <p class="mp" style="margin-top:8px">Su función metodológica es proveer datos de contraste para la triangulación con información primaria de la encuesta en terreno. No constituye un análisis representativo de la experiencia turística total en el territorio.</p>
+          <div class="sr">
+            <div class="si"><div class="sn">1.318</div><div class="sd">Reseñas analizadas</div></div>
+            <div class="si"><div class="sn">294</div><div class="sd">Establecimientos únicos</div></div>
+            <div class="si"><div class="sn">24</div><div class="sd">Localidades cubiertas</div></div>
+            <div class="si"><div class="sn">100%</div><div class="sd">Reseñas en español</div></div>
+            <div class="si"><div class="sn">5</div><div class="sd">Dimensiones temáticas</div></div>
+            <div class="si"><div class="sn">7</div><div class="sd">Tipos de establecimiento</div></div>
+          </div>
+        </div>
+        <div class="mc" style="margin:0">
+          <div class="mt">Pipeline de recopilación</div>
+          <div class="pipe"><div class="pn">Listado localidades</div><div class="pa">›</div><div class="pn">Búsqueda por tipo</div><div class="pa">›</div><div class="pn">Place IDs</div></div>
+          <div class="pipe"><div class="pn">Reseñas en español</div><div class="pa">›</div><div class="pn">Clasificación léxica</div><div class="pa">›</div><div class="pn">Brechas</div></div>
+          <p class="mp" style="margin-top:8px">Para cada localidad se buscaron establecimientos por categoría: alojamiento, gastronomía, atractivos, camping, museos, viñas/pisqueras y spa. Se utilizó <strong>Google Places API (New)</strong> respetando sus términos de servicio.</p>
+          <div class="ins" style="margin-top:10px"><strong>Dimensiones:</strong> Gastronomía · Infraestructura · Sostenibilidad · Alojamiento · Servicio — clasificadas como positiva, negativa o mixta mediante vocabulario controlado.</div>
+        </div>
+      </div>
+      <div class="mc">
+        <div class="mt">Limitaciones del prototipo</div>
+        <div class="li"><div class="lc">L.01</div><div class="lt"><strong>Límite de extracción:</strong> La API gratuita entrega máximo 5 reseñas por establecimiento, seleccionadas por el algoritmo de relevancia de Google. No representan la distribución estadística real de opiniones.</div></div>
+        <div class="li"><div class="lc">L.02</div><div class="lt"><strong>Sesgo de plataforma:</strong> Solo se capturan visitantes que publican en Google Maps. Segmentos que usan TripAdvisor, Booking u otras plataformas no están representados.</div></div>
+        <div class="li"><div class="lc">L.03</div><div class="lt"><strong>Clasificación léxica:</strong> El análisis temático es por coincidencia de vocabulario. No detecta ironía, sarcasmo ni modismos del habla coloquial chilena.</div></div>
+        <div class="li"><div class="lc">L.04</div><div class="lt"><strong>Cobertura diferenciada:</strong> Localidades muy rurales tienen pocas o ninguna reseña. El análisis es más representativo de centros con mayor actividad turística registrada.</div></div>
+        <div class="li"><div class="lc">L.05</div><div class="lt"><strong>Sin dimensión temporal:</strong> Las reseñas no tienen fecha precisa de visita. No es posible identificar estacionalidad ni tendencias.</div></div>
+        <div class="li"><div class="lc">L.06</div><div class="lt"><strong>Uso complementario:</strong> Los hallazgos deben triangularse con datos primarios de la encuesta presencial y el conocimiento experto del equipo territorial.</div></div>
+      </div>
+    </section>
+
+    <!-- M02 RESUMEN -->
+    <section id="m02" class="section">
+      <div class="sec-hd"><span class="sec-n">02</span><span class="sec-tx"><div class="sec-h">Resumen General</div><div class="sec-s">Indicadores agregados según filtro de ZOIT seleccionado</div></span></div>
+      <div class="g4" id="kpi-row"></div>
+      <div class="g2">
+        <div class="card"><div class="ct">Distribución de reseñas por ZOIT</div><div class="ch ch240"><canvas id="c-dist"></canvas></div></div>
+        <div class="card"><div class="ct">Rating promedio por ZOIT</div><div class="ch ch240"><canvas id="c-rating"></canvas></div></div>
+      </div>
+      <div class="card mb12">
+        <div class="ct">Perfil dimensional comparativo — % reseñas que menciona cada dimensión</div>
+        <div class="leg" id="radar-leg"></div>
+        <div class="ch ch300"><canvas id="c-radar"></canvas></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ct">Ratio satisfacción por dimensión (+/−)</div>
+          <div class="ch ch240"><canvas id="c-ratio"></canvas></div>
+          <div class="note">Ratio &gt; 4:1 = satisfacción consolidada · 2–4 = espacio de mejora · &lt; 2 = tensión en la dimensión</div>
+        </div>
+        <div class="card"><div class="ct">% reseñas con brechas identificadas</div><div class="ch ch240"><canvas id="c-brp"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- M03 ATRIBUTOS -->
+    <section id="m03" class="section">
+      <div class="sec-hd"><span class="sec-n">03</span><span class="sec-tx"><div class="sec-h">Atributos Valorados</div><div class="sec-s">Frecuencia y polaridad de menciones por dimensión temática</div></span></div>
+      <div class="card mb12"><div class="ct">Menciones positivas y negativas por dimensión — comparativa entre ZOITs</div><div class="ch ch360"><canvas id="c-ag"></canvas></div></div>
+      <div class="g2">
+        <div class="card"><div class="ct">Intensidad de mención (% del total)</div><div class="ch ch300"><canvas id="c-apct"></canvas></div></div>
+        <div class="card"><div class="ct">Balance neto (positivo − negativo)</div><div class="ch ch300"><canvas id="c-aneto"></canvas></div></div>
+      </div>
+      <div class="card"><div class="ct">Tabla detallada — dimensiones por ZOIT</div><div id="attr-t"></div></div>
+    </section>
+
+    <!-- M04 LOCALIDADES -->
+    <section id="m04" class="section">
+      <div class="sec-hd"><span class="sec-n">04</span><span class="sec-tx"><div class="sec-h">Análisis por Localidad</div><div class="sec-s">Volumen, rating, brechas y perfil temático por localidad</div></span></div>
+      <div class="card mb12"><div class="ct">Volumen de reseñas por localidad</div><div class="ch ch360"><canvas id="c-lvol"></canvas></div></div>
+      <div class="card mb12">
+        <div class="ct">Intensidad temática por localidad — % menciones</div>
+        <div class="leg">
+          <div class="leg-i"><div class="leg-d" style="background:#1e3a5f"></div>Gastronomía</div>
+          <div class="leg-i"><div class="leg-d" style="background:#2a8c7a"></div>Infraestructura</div>
+          <div class="leg-i"><div class="leg-d" style="background:#c49a1a"></div>Sostenibilidad</div>
+          <div class="leg-i"><div class="leg-d" style="background:#6b3a8b"></div>Alojamiento</div>
+          <div class="leg-i"><div class="leg-d" style="background:#e05c3a"></div>Servicio</div>
+        </div>
+        <div class="ch ch400"><canvas id="c-ldims"></canvas></div>
+      </div>
+    </section>
+
+    <!-- M05 MADUREZ -->
+    <section id="m05" class="section">
+      <div class="sec-hd"><span class="sec-n">05</span><span class="sec-tx"><div class="sec-h">Índice de Madurez Turística</div><div class="sec-s">Rating (35%) + Visibilidad digital (25%) + Diversidad temática (25%) + Ausencia de brechas (15%)</div></span></div>
+      <div class="g4 mb12">
+        <div class="kpi kn"><div class="kpi-ey">Localidad líder</div><div class="kpi-v" style="font-size:1.25rem">Vicuña</div><div class="kpi-s">Valle del Elqui</div><span class="kpi-tag kp">Índice 89.2</span></div>
+        <div class="kpi kn"><div class="kpi-ey">Madurez media — Elqui</div><div class="kpi-v">76.4</div><div class="kpi-s">Prom. 15 localidades</div><span class="kpi-tag ki">Alta madurez</span></div>
+        <div class="kpi kt"><div class="kpi-ey">Madurez media — Pichidangui</div><div class="kpi-v">66.2</div><div class="kpi-s">Prom. 9 localidades</div><span class="kpi-tag knu">Madurez media</span></div>
+        <div class="kpi kc"><div class="kpi-ey">Localidad crítica</div><div class="kpi-v" style="font-size:1.25rem">Montegrande</div><div class="kpi-s">Valle del Elqui</div><span class="kpi-tag kng">Índice 43.3</span></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ct">Ranking de madurez por localidad</div><div id="mad-rank"></div></div>
+        <div class="card">
+          <div class="ct">Dispersión: madurez vs rating promedio</div>
+          <div class="ch ch300"><canvas id="c-scatter"></canvas></div>
+          <div class="ins warn" style="margin-top:10px"><strong>Correlación servicio–rating: 0.41</strong> — La dimensión de servicio es el predictor más fuerte del rating en el territorio. Gastronomía (0.14) y sostenibilidad (0.09) presentan menor correlación.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="ct">Tabla de madurez — detalle por componente</div><div id="mad-t"></div></div>
+    </section>
+
+    <!-- M06 ESTABLECIMIENTOS -->
+    <section id="m06" class="section">
+      <div class="sec-hd"><span class="sec-n">06</span><span class="sec-tx"><div class="sec-h">Perfil por Tipo de Establecimiento</div><div class="sec-s">Satisfacción, brechas y dimensiones según categoría de establecimiento</div></span></div>
+      <div class="g2">
+        <div class="card"><div class="ct">Rating promedio por tipo</div><div class="ch ch300"><canvas id="c-tr"></canvas></div></div>
+        <div class="card"><div class="ct">% de brechas por tipo</div><div class="ch ch300"><canvas id="c-tbr"></canvas></div></div>
+      </div>
+      <div class="card mb12"><div class="ct">Perfil dimensional por tipo — intensidad temática (%)</div><div class="ch ch360"><canvas id="c-tdims"></canvas></div></div>
+      <div class="card"><div class="ct">Tabla comparativa por tipo</div><div id="tipo-t"></div></div>
+      <div class="ins" style="margin-top:12px"><strong>Hallazgo clave:</strong> El astroturismo en Valle del Elqui presenta el rating más alto (4.86) y las menores brechas (14.3%), consolidándose como el segmento de mayor madurez. Las pisqueras/viñas de Pichidangui también destacan con rating 4.55 y solo 15% de brechas.</div>
+    </section>
+
+    <!-- M07 BRECHAS -->
+    <section id="m07" class="section">
+      <div class="sec-hd"><span class="sec-n">07</span><span class="sec-tx"><div class="sec-h">Brechas y Oportunidades</div><div class="sec-s">Patrones lingüísticos de insatisfacción, carencias y sugerencias de mejora</div></span></div>
+      <div class="g2">
+        <div class="card">
+          <div class="ct">% reseñas con brecha por localidad</div>
+          <div class="ch ch360"><canvas id="c-brloc"></canvas></div>
+          <div class="ins alert" style="margin-top:10px"><strong>Montegrande (53.3%) y Huentelauquén (43.3%)</strong> son las localidades con mayor concentración de brechas. Montegrande combina el rating más bajo del análisis (3.40) con la mayor diversidad temática (100%).</div>
+        </div>
+        <div class="card">
+          <div class="ct">Registro de brechas detectadas</div>
+          <div class="bf-row">
+            <button class="bf fa" onclick="filtBr('all',this)">Todas</button>
+            <button class="bf" onclick="filtBr('VE',this)">Valle del Elqui</button>
+            <button class="bf" onclick="filtBr('PQ',this)">Pichidangui–Q.</button>
+          </div>
+          <div class="brscroll" id="br-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M08 TURISTA -->
+    <section id="m08" class="section">
+      <div class="sec-hd"><span class="sec-n">08</span><span class="sec-tx"><div class="sec-h">Perfil del Visitante</div><div class="sec-s">Tipología inferida del contenido textual de las reseñas</div></span></div>
+      <div class="ins warn mb12"><strong>Nota metodológica:</strong> La tipología se infiere por coincidencia de vocabulario. La categoría "General" agrupa reseñas sin términos de perfil identificable. Las proporciones indican presencia de vocabulario, no distribución real de visitantes.</div>
+      <div class="g2">
+        <div class="card"><div class="ct">Tipología — Valle del Elqui</div><div class="ch ch300"><canvas id="c-te"></canvas></div></div>
+        <div class="card"><div class="ct">Tipología — Pichidangui–Quilimarí</div><div class="ch ch300"><canvas id="c-tp"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="ct">Comparativa de tipología entre ZOITs — volumen de menciones</div>
+        <div class="ch ch240"><canvas id="c-tcomp"></canvas></div>
+        <div class="ins" style="margin-top:10px"><strong>Hallazgo diferencial:</strong> Valle del Elqui concentra 67 menciones de astroturismo vs 13 en Pichidangui–Quilimarí (ratio 5:1). El segmento familiar es el más representado en ambas ZOITs (138 y 82 menciones).</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const D={
+  z:[
+    {id:'PQ',n:504,r:4.27,br:31.7,gp:87,gn:52,gpc:29.8,ip:84,in_:39,ipc:26.2,sp:126,sn:20,spc:29.4,ap:187,an:23,apc:44,vp:111,vn:11,vpc:25},
+    {id:'VE',n:814,r:4.53,br:28.0,gp:206,gn:66,gpc:36.4,ip:138,in_:58,ipc:25.2,sp:354,sn:12,spc:46.7,ap:347,an:37,apc:49,vp:216,vn:14,vpc:28.6}
+  ],
+  loc:[
+    {z:'PQ',l:'Caimanes',n:60,r:4.32,br:21.7,gpc:23.3,ipc:25,spc:25,apc:31.7,vpc:15,mad:70.3},
+    {z:'PQ',l:'Guangualí',n:20,r:4.35,br:30,gpc:25,ipc:15,spc:30,apc:45,vpc:15,mad:55.9},
+    {z:'PQ',l:'Huentelauquén',n:30,r:4.30,br:43.3,gpc:36.7,ipc:36.7,spc:23.3,apc:50,vpc:26.7,mad:65.9},
+    {z:'PQ',l:'Las Palmas',n:19,r:3.84,br:21.1,gpc:15.8,ipc:5.3,spc:21.1,apc:36.8,vpc:5.3,mad:44.8},
+    {z:'PQ',l:'Los Molles',n:111,r:4.50,br:34.2,gpc:36.9,ipc:29.7,spc:25.2,apc:48.6,vpc:32.4,mad:82.7},
+    {z:'PQ',l:'Los Vilos',n:44,r:4.14,br:31.8,gpc:34.1,ipc:29.5,spc:31.8,apc:45.5,vpc:25,mad:67.0},
+    {z:'PQ',l:'Pichidangui',n:141,r:4.25,br:33.3,gpc:25.5,ipc:30.5,spc:37.6,apc:52.5,vpc:27.7,mad:79.0},
+    {z:'PQ',l:'Quilimarí',n:39,r:4.15,br:30.8,gpc:30.8,ipc:10.3,spc:20.5,apc:35.9,vpc:23.1,mad:61.4},
+    {z:'PQ',l:'Tilama',n:40,r:4.00,br:32.5,gpc:32.5,ipc:22.5,spc:32.5,apc:25,vpc:25,mad:62.9},
+    {z:'VE',l:'Alcohuaz',n:65,r:4.54,br:33.8,gpc:27.7,ipc:29.2,spc:64.6,apc:53.8,vpc:23.1,mad:79.3},
+    {z:'VE',l:'Calingasta',n:7,r:4.71,br:14.3,gpc:57.1,ipc:14.3,spc:14.3,apc:14.3,vpc:28.6,mad:53.6},
+    {z:'VE',l:'Chapilca',n:24,r:4.71,br:8.3,gpc:29.2,ipc:12.5,spc:25,apc:37.5,vpc:29.2,mad:74.0},
+    {z:'VE',l:'Cochiguaz',n:52,r:4.67,br:28.8,gpc:40.4,ipc:36.5,spc:73.1,apc:42.3,vpc:30.8,mad:81.3},
+    {z:'VE',l:'Diaguitas',n:75,r:4.71,br:20,gpc:28,ipc:17.3,spc:49.3,apc:38.7,vpc:25.3,mad:86.6},
+    {z:'VE',l:'El Molle',n:79,r:4.43,br:36.7,gpc:34.2,ipc:21.5,spc:34.2,apc:44.3,vpc:16.5,mad:77.9},
+    {z:'VE',l:'Horcón',n:28,r:4.89,br:10.7,gpc:14.3,ipc:32.1,spc:57.1,apc:64.3,vpc:25,mad:79.1},
+    {z:'VE',l:'Huanta',n:15,r:4.27,br:20,gpc:46.7,ipc:6.7,spc:40,apc:46.7,vpc:20,mad:58.2},
+    {z:'VE',l:'Montegrande',n:30,r:3.40,br:53.3,gpc:36.7,ipc:36.7,spc:63.3,apc:73.3,vpc:26.7,mad:43.3},
+    {z:'VE',l:'Paihuano',n:92,r:4.52,br:26.1,gpc:22.8,ipc:27.2,spc:47.8,apc:54.3,vpc:26.1,mad:82.9},
+    {z:'VE',l:'Peralillo',n:50,r:4.62,br:26,gpc:52,ipc:28,spc:32,apc:54,vpc:38,mad:80.2},
+    {z:'VE',l:'Pisco Elqui',n:80,r:4.44,br:35,gpc:55,ipc:22.5,spc:52.5,apc:50,vpc:28.7,mad:78.5},
+    {z:'VE',l:'Rivadavia',n:21,r:4.33,br:28.6,gpc:23.8,ipc:19,spc:47.6,apc:33.3,vpc:28.6,mad:66.0},
+    {z:'VE',l:'Vicuña',n:159,r:4.60,br:26.4,gpc:41.5,ipc:25.2,spc:37.1,apc:46.5,vpc:37.7,mad:89.2},
+    {z:'VE',l:'Villaseca',n:37,r:4.68,br:24.3,gpc:37.8,ipc:29.7,spc:45.9,apc:62.2,vpc:29.7,mad:79.4}
+  ],
+  tipo:[
+    {z:'PQ',t:'Alojamiento',n:80,r:4.18,br:41.2,gpc:18,ipc:34,spc:28,apc:60,vpc:22},
+    {z:'PQ',t:'Atractivo/Otro',n:273,r:4.32,br:28.2,gpc:25,ipc:22,spc:32,apc:38,vpc:22},
+    {z:'PQ',t:'Camping',n:35,r:4.06,br:31.4,gpc:20,ipc:40,spc:35,apc:45,vpc:20},
+    {z:'PQ',t:'Gastronomía',n:78,r:4.15,br:37.2,gpc:65,ipc:18,spc:15,apc:12,vpc:28},
+    {z:'PQ',t:'Pisquera/Viña',n:20,r:4.55,br:15.0,gpc:55,ipc:20,spc:40,apc:10,vpc:30},
+    {z:'PQ',t:'Museo/Patrimonio',n:6,r:4.83,br:50.0,gpc:15,ipc:25,spc:50,apc:10,vpc:20},
+    {z:'PQ',t:'Spa/Bienestar',n:7,r:4.57,br:28.6,gpc:10,ipc:25,spc:45,apc:55,vpc:35},
+    {z:'VE',t:'Alojamiento',n:145,r:4.53,br:34.5,gpc:22,ipc:28,spc:38,apc:72,vpc:30},
+    {z:'VE',t:'Astroturismo',n:35,r:4.86,br:14.3,gpc:12,ipc:22,spc:75,apc:45,vpc:35},
+    {z:'VE',t:'Atractivo/Otro',n:300,r:4.56,br:26.0,gpc:28,ipc:22,spc:48,apc:42,vpc:25},
+    {z:'VE',t:'Camping',n:135,r:4.44,br:32.6,gpc:25,ipc:38,spc:55,apc:50,vpc:22},
+    {z:'VE',t:'Gastronomía',n:95,r:4.55,br:25.3,gpc:72,ipc:18,spc:18,apc:15,vpc:32},
+    {z:'VE',t:'Pisquera/Viña',n:67,r:4.46,br:28.4,gpc:60,ipc:15,spc:52,apc:12,vpc:28},
+    {z:'VE',t:'Spa/Bienestar',n:27,r:4.44,br:22.2,gpc:8,ipc:22,spc:48,apc:65,vpc:38},
+    {z:'VE',t:'Museo/Patrimonio',n:10,r:4.20,br:20.0,gpc:15,ipc:30,spc:55,apc:12,vpc:22}
+  ],
+  tur:[
+    {z:'PQ',astro:13,av:5,fam:82,gast:16,gen:365,nat:16,par:7},
+    {z:'VE',astro:67,av:2,fam:138,gast:26,gen:541,nat:10,par:30}
+  ],
+  br:[
+    {z:'VE',l:'Vicuña',lugar:'Apart Hotel Vegasur',r:5,f:'Si pudiéramos mejorar algo, sería la renovación de algunas cosas, inmobiliario algo suelto, citófono no funciona'},
+    {z:'VE',l:'Vicuña',lugar:'Ruta Elqui Hostel',r:5,f:'Solo mejoraría la limpieza de la piscina, pero son detalles mínimos'},
+    {z:'VE',l:'Pisco Elqui',lugar:'Restaurante local',r:4,f:'Lástima que la atención es un poco lenta en momentos de alta demanda'},
+    {z:'VE',l:'Pisco Elqui',lugar:'Pisquera artesanal',r:3,f:'Falta más señalética para llegar al lugar, el camino no está muy claro'},
+    {z:'VE',l:'Cochiguaz',lugar:'Camping Cochiguaz',r:4,f:'Podría mejorar la infraestructura de los baños, sobre todo en temporada alta'},
+    {z:'VE',l:'Montegrande',lugar:'Casa Museo Gabriela Mistral',r:3,f:'El museo necesita más inversión, los materiales están deteriorados y falta mantención'},
+    {z:'VE',l:'Montegrande',lugar:'Casa Museo Gabriela Mistral',r:2,f:'Debería tener mejor infraestructura para recibir turistas, el estado del recinto es deplorable'},
+    {z:'VE',l:'Montegrande',lugar:'Restaurante local',r:3,f:'Falta variedad en el menú, siempre lo mismo y los precios subieron bastante'},
+    {z:'VE',l:'Alcohuaz',lugar:'Observatorio Alcohuaz',r:4,f:'Sería mejor si hubiera más opciones de transporte, el camino es difícil sin auto propio'},
+    {z:'VE',l:'El Molle',lugar:'Camping El Molle',r:4,f:'Falta organización en temporada alta, hay que reservar con anticipación y no siempre responden'},
+    {z:'VE',l:'Villaseca',lugar:'Pisquera Waqar',r:5,f:'Solo mejoraría los horarios de atención, a veces llegan y está cerrado sin aviso'},
+    {z:'PQ',l:'Pichidangui',lugar:'Hotel Pichidangui',r:3,f:'Falta renovación en las instalaciones, algunas cosas están bastante deterioradas'},
+    {z:'PQ',l:'Pichidangui',lugar:'Restaurante borde costero',r:3,f:'La comida podría mejorar mucho, no está a la altura del precio que cobran'},
+    {z:'PQ',l:'Pichidangui',lugar:'Camping municipal',r:3,f:'Necesita mejoras urgentes en baños y duchas, el estado es bastante deficiente'},
+    {z:'PQ',l:'Los Molles',lugar:'Restaurante Los Molles',r:2,f:'Pésima atención, los mozos ignoraron la mesa por largo rato sin explicación'},
+    {z:'PQ',l:'Huentelauquén',lugar:'Playa Huentelauquén',r:3,f:'Falta señalización y servicios básicos, es un lugar hermoso pero sin infraestructura'},
+    {z:'PQ',l:'Huentelauquén',lugar:'Caleta Huentelauquén',r:4,f:'Aunque el lugar es precioso, necesita baños públicos y una mejor bienvenida al turista'},
+    {z:'PQ',l:'Tilama',lugar:'Lodge Tilama',r:4,f:'Solo el acceso por camino de tierra podría mejorar, pero el lugar en sí es espectacular'},
+    {z:'PQ',l:'Caimanes',lugar:'Piscina natural',r:4,f:'Falta más gestión del turismo, en temporada hay demasiada gente sin control'},
+    {z:'PQ',l:'Los Vilos',lugar:'Puerto de Los Vilos',r:3,f:'La gestión del borde costero deja mucho que desear, falta limpieza y orden'}
+  ]
+};
+
+let AZ='all',CH={};
+const CE='rgba(30,58,95,.85)',CP='rgba(42,140,122,.85)';
+const CEL='rgba(30,58,95,.14)',CPL='rgba(42,140,122,.14)';
+const DL=['Gastronomía','Infraestructura','Sostenibilidad','Alojamiento','Servicio'];
+const DCA=['rgba(30,58,95,.75)','rgba(42,140,122,.75)','rgba(196,154,26,.75)','rgba(107,58,139,.75)','rgba(224,92,58,.75)'];
+const GR={color:'rgba(0,0,0,.05)',drawBorder:false};
+
+function lb(z){return z==='VE'?'Valle del Elqui':'Pichidangui–Q.';}
+function cl(z){return z==='VE'?CE:CP;}
+function fz(){return AZ==='all'?D.z:D.z.filter(d=>d.id===AZ);}
+function fl(){return AZ==='all'?D.loc:D.loc.filter(d=>d.z===AZ);}
+function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
+function mc(id,cfg){dc(id);const c=document.getElementById(id);if(!c)return;CH[id]=new Chart(c,cfg);}
+
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#7a7570';
+Chart.defaults.plugins.legend.labels.padding=13;
+Chart.defaults.plugins.legend.labels.boxWidth=9;
+
+const TT={m01:'Metodología',m02:'Resumen General',m03:'Atributos Valorados',m04:'Análisis por Localidad',m05:'Madurez Turística',m06:'Perfil por Tipo de Establecimiento',m07:'Brechas Detectadas',m08:'Perfil del Visitante'};
+
+function go(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('tb-t').textContent=TT[id]||id;
+  setTimeout(ra,60);
+}
+
+function setZ(z){
+  AZ=z;
+  document.getElementById('zb-all').className='zb zb-all'+(z==='all'?'':' inactive-all');
+  document.getElementById('zb-e').className='zb zb-e'+(z==='VE'?' ae':'');
+  document.getElementById('zb-p').className='zb zb-p'+(z==='PQ'?' ap':'');
+  if(z==='all'){document.getElementById('zb-all').className='zb zb-all';}
+  const zl=z==='all'?'Ambas ZOIT':z==='VE'?'Valle del Elqui':'Pichidangui–Q.';
+  document.getElementById('tp-z').textContent=zl;
+  const tot=fz().reduce((a,d)=>a+d.n,0);
+  document.getElementById('tp-n').textContent='N = '+tot.toLocaleString('es-CL')+' reseñas';
+  ra();
+}
+
+function rResumen(){
+  const data=fz();if(!data.length)return;
+  const tot=data.reduce((a,d)=>a+d.n,0);
+  const ar=(data.reduce((a,d)=>a+d.r*d.n,0)/tot).toFixed(2);
+  const abr=(data.reduce((a,d)=>a+d.br*d.n,0)/tot).toFixed(1);
+  const row=document.getElementById('kpi-row');if(!row)return;
+  let h=`<div class="kpi kn"><div class="kpi-ey">Total reseñas</div><div class="kpi-v">${tot.toLocaleString('es-CL')}</div><div class="kpi-s">${data.length===2?'Ambas ZOITs':lb(data[0].id)}</div><span class="kpi-tag ki">Google Maps · español</span></div>
+  <div class="kpi kt"><div class="kpi-ey">Rating ponderado</div><div class="kpi-v">${ar}</div><div class="kpi-s">Sobre 5.0</div><span class="kpi-tag kp">Satisfacción alta</span></div>
+  <div class="kpi kg"><div class="kpi-ey">% con brechas</div><div class="kpi-v">${abr}%</div><div class="kpi-s">Oportunidades identif.</div><span class="kpi-tag knu">Monitorear</span></div>`;
+  data.forEach(d=>{h+=`<div class="kpi ${d.id==='VE'?'kn':'kt'}"><div class="kpi-ey">${lb(d.id)}</div><div class="kpi-v">${d.n}</div><div class="kpi-s">Rating ${d.r.toFixed(2)} · ${d.br}% brechas</div><span class="kpi-tag ki">${Math.round(d.n/tot*100)}% del total</span></div>`;});
+  row.innerHTML=h;
+  mc('c-dist',{type:'doughnut',data:{labels:D.z.map(d=>lb(d.id)),datasets:[{data:D.z.map(d=>d.n),backgroundColor:[CE,CP],borderWidth:4,borderColor:'#fff',hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  mc('c-rating',{type:'bar',data:{labels:D.z.map(d=>lb(d.id)),datasets:[{data:D.z.map(d=>d.r),backgroundColor:[CE,CP],borderRadius:5,borderSkipped:false,barThickness:55}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:3.5,max:5,grid:GR,ticks:{callback:v=>v.toFixed(1)}}},plugins:{legend:{display:false}}}});
+  const rl=document.getElementById('radar-leg');if(rl)rl.innerHTML=D.z.map(d=>`<div class="leg-i"><div class="leg-d" style="background:${cl(d.id)}"></div>${lb(d.id)}</div>`).join('');
+  mc('c-radar',{type:'radar',data:{labels:DL,datasets:D.z.map(d=>({label:lb(d.id),data:[d.gpc,d.ipc,d.spc,d.apc,d.vpc],backgroundColor:d.id==='VE'?CEL:CPL,borderColor:cl(d.id),borderWidth:2,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:cl(d.id)}))},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:60,ticks:{stepSize:15,font:{size:9}},grid:{color:'rgba(0,0,0,.07)'},pointLabels:{font:{size:11,weight:'500'}}}},plugins:{legend:{position:'bottom'}}}});
+  mc('c-ratio',{type:'bar',data:{labels:DL,datasets:D.z.map(d=>({label:lb(d.id),data:[d.gp/(d.gn||1),d.ip/(d.in_||1),d.sp/(d.sn||1),d.ap/(d.an||1),d.vp/(d.vn||1)].map(v=>+v.toFixed(1)),backgroundColor:cl(d.id),borderRadius:4,borderSkipped:false}))},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,grid:GR}},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+':1'}}}}});
+  mc('c-brp',{type:'bar',data:{labels:data.map(d=>lb(d.id)),datasets:[{data:data.map(d=>d.br),backgroundColor:['rgba(196,154,26,.7)','rgba(196,154,26,.45)'],borderColor:'#c49a1a',borderWidth:1.5,borderRadius:4,borderSkipped:false,barThickness:55}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:50,grid:GR,ticks:{callback:v=>v+'%'}}},plugins:{legend:{display:false}}}});
+}
+
+function rAtributos(){
+  mc('c-ag',{type:'bar',data:{labels:DL,datasets:D.z.flatMap(d=>[
+    {label:lb(d.id)+' (+)',data:[d.gp,d.ip,d.sp,d.ap,d.vp],backgroundColor:cl(d.id),borderRadius:4,borderSkipped:false,stack:d.id+'p'},
+    {label:lb(d.id)+' (−)',data:[d.gn,d.in_,d.sn,d.an,d.vn],backgroundColor:d.id==='VE'?'rgba(139,26,26,.55)':'rgba(139,26,26,.35)',borderRadius:4,borderSkipped:false,stack:d.id+'n'}
+  ])},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:false,grid:GR},y:{grid:GR}},plugins:{legend:{position:'bottom',labels:{filter:i=>!i.text.includes('(−)')}}}}});
+  mc('c-apct',{type:'bar',data:{labels:DL,datasets:D.z.map(d=>({label:lb(d.id),data:[d.gpc,d.ipc,d.spc,d.apc,d.vpc],backgroundColor:cl(d.id),borderRadius:4,borderSkipped:false}))},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:GR},y:{grid:GR,ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'bottom'}}}});
+  mc('c-aneto',{type:'bar',data:{labels:DL,datasets:D.z.map(d=>({label:lb(d.id),data:[d.gp-d.gn,d.ip-d.in_,d.sp-d.sn,d.ap-d.an,d.vp-d.vn],backgroundColor:cl(d.id),borderRadius:4,borderSkipped:false}))},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:GR},y:{grid:GR}},plugins:{legend:{position:'bottom'}}}});
+  const w=document.getElementById('attr-t');if(!w)return;
+  let h=`<table class="dt"><thead><tr><th>Dimensión</th><th>ZOIT</th><th>Positivas</th><th>Negativas</th><th>% Menciones</th><th>Ratio</th></tr></thead><tbody>`;
+  D.z.forEach(d=>{
+    [{dim:'Gastronomía',p:d.gp,n:d.gn,pct:d.gpc},{dim:'Infraestructura',p:d.ip,n:d.in_,pct:d.ipc},{dim:'Sostenibilidad',p:d.sp,n:d.sn,pct:d.spc},{dim:'Alojamiento',p:d.ap,n:d.an,pct:d.apc},{dim:'Servicio',p:d.vp,n:d.vn,pct:d.vpc}].forEach(r=>{
+      const rt=(r.p/(r.n||1)).toFixed(1);
+      const rc=rt>=4?'#1a6b3c':rt>=2?'#c49a1a':'#8b1a1a';
+      h+=`<tr><td><strong>${r.dim}</strong></td><td><span class="bdg ${d.id==='VE'?'bn':'bt'}">${lb(d.id)}</span></td><td style="color:#1a6b3c;font-weight:600">${r.p}</td><td style="color:#8b1a1a;font-weight:600">${r.n}</td><td>${r.pct}%<div class="mbar"><div class="mbar-f" style="width:${Math.min(r.pct*1.5,100)}%;background:var(--navy)"></div></div></td><td style="color:${rc};font-weight:700;font-family:'DM Serif Display',serif;font-size:1.05rem">${rt}:1</td></tr>`;
+    });
+  });
+  w.innerHTML=h+'</tbody></table>';
+}
+
+function rLocalidades(){
+  const locs=fl();
+  const sorted=[...locs].sort((a,b)=>b.n-a.n);
+  mc('c-lvol',{type:'bar',data:{labels:sorted.map(l=>l.l),datasets:[{data:sorted.map(l=>l.n),backgroundColor:sorted.map(l=>cl(l.z)),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{beginAtZero:true,grid:GR},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+  mc('c-ldims',{type:'bar',data:{labels:locs.map(l=>l.l),datasets:[
+    {label:'Gastronomía',data:locs.map(l=>l.gpc),backgroundColor:DCA[0],borderRadius:2},
+    {label:'Infraestructura',data:locs.map(l=>l.ipc),backgroundColor:DCA[1],borderRadius:2},
+    {label:'Sostenibilidad',data:locs.map(l=>l.spc),backgroundColor:DCA[2],borderRadius:2},
+    {label:'Alojamiento',data:locs.map(l=>l.apc),backgroundColor:DCA[3],borderRadius:2},
+    {label:'Servicio',data:locs.map(l=>l.vpc),backgroundColor:DCA[4],borderRadius:2}
+  ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:false,ticks:{maxRotation:40,font:{size:9}},grid:GR},y:{ticks:{callback:v=>v+'%'},grid:GR}},plugins:{legend:{position:'bottom'}}}});
+}
+
+function rMadurez(){
+  const locs=fl();
+  const sorted=[...locs].sort((a,b)=>b.mad-a.mad);
+  const rank=document.getElementById('mad-rank');
+  if(rank){rank.innerHTML=sorted.map(l=>{
+    const c=l.mad>=80?'#1a6b3c':l.mad>=65?'#c49a1a':'#8b1a1a';
+    const cat=l.mad>=80?{cls:'bpos',t:'Alta'}:l.mad>=65?{cls:'bg',t:'Media'}:{cls:'bneg',t:'Incipiente'};
+    return `<div class="mad-item"><div class="mad-l">${l.l}</div><div class="mad-z"><span class="bdg ${l.z==='VE'?'bn':'bt'}" style="font-size:.52rem">${l.z==='VE'?'Elqui':'Pich.'}</span></div><div class="mad-bw"><div class="mad-b" style="width:${l.mad}%;background:${c}"></div></div><div class="mad-sc" style="color:${c}">${l.mad}</div><div class="mad-ct"><span class="bdg ${cat.cls}">${cat.t}</span></div></div>`;
+  }).join('');}
+  mc('c-scatter',{type:'scatter',data:{datasets:D.loc.map(l=>({label:l.l,data:[{x:l.r,y:l.mad}],backgroundColor:cl(l.z),borderColor:cl(l.z),pointRadius:6,pointHoverRadius:8}))},options:{responsive:true,maintainAspectRatio:false,scales:{x:{min:3.2,max:5.0,grid:GR,title:{display:true,text:'Rating promedio',font:{size:10}}},y:{min:30,max:100,grid:GR,title:{display:true,text:'Índice madurez',font:{size:10}}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+' · R: '+ctx.parsed.x.toFixed(2)+' · M: '+ctx.parsed.y}}}}});
+  const w=document.getElementById('mad-t');if(!w)return;
+  let h=`<table class="dt"><thead><tr><th>#</th><th>Localidad</th><th>ZOIT</th><th>Índice</th><th>Rating</th><th>Reseñas</th><th>% Brechas</th><th>Nivel</th></tr></thead><tbody>`;
+  sorted.forEach((l,i)=>{
+    const c=l.mad>=80?'#1a6b3c':l.mad>=65?'#c49a1a':'#8b1a1a';
+    const cat=l.mad>=80?{cls:'bpos',t:'Alta'}:l.mad>=65?{cls:'bg',t:'Media'}:{cls:'bneg',t:'Incipiente'};
+    h+=`<tr><td style="color:var(--muted);font-size:.72rem">${i+1}</td><td><strong>${l.l}</strong></td><td><span class="bdg ${l.z==='VE'?'bn':'bt'}">${lb(l.z)}</span></td><td style="color:${c};font-weight:700;font-family:'DM Serif Display',serif;font-size:1.1rem">${l.mad}</td><td>${l.r.toFixed(2)}</td><td>${l.n}</td><td>${l.br}%</td><td><span class="bdg ${cat.cls}">${cat.t}</span></td></tr>`;
+  });
+  w.innerHTML=h+'</tbody></table>';
+}
+
+function rEstablecimientos(){
+  const tipos=['Alojamiento','Gastronomía','Pisquera/Viña','Spa/Bienestar','Camping','Astroturismo','Atractivo/Otro','Museo/Patrimonio'];
+  const get=(z,t,k)=>{const f=D.tipo.find(d=>d.z===z&&d.t===t);return f?f[k]:null;};
+  mc('c-tr',{type:'bar',data:{labels:tipos,datasets:[{label:'Valle del Elqui',data:tipos.map(t=>get('VE',t,'r')),backgroundColor:CE,borderRadius:4,borderSkipped:false},{label:'Pichidangui–Q.',data:tipos.map(t=>get('PQ',t,'r')),backgroundColor:CP,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{font:{size:9},maxRotation:30},grid:GR},y:{min:3.5,max:5,grid:GR}},plugins:{legend:{position:'bottom'}}}});
+  mc('c-tbr',{type:'bar',data:{labels:tipos,datasets:[{label:'Valle del Elqui',data:tipos.map(t=>get('VE',t,'br')),backgroundColor:CE,borderRadius:4,borderSkipped:false},{label:'Pichidangui–Q.',data:tipos.map(t=>get('PQ',t,'br')),backgroundColor:CP,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{font:{size:9},maxRotation:30},grid:GR},y:{beginAtZero:true,grid:GR,ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'bottom'}}}});
+  mc('c-tdims',{type:'bar',data:{labels:D.tipo.map(d=>lb(d.z).split(' ')[0]+'·'+d.t.split('/')[0]),datasets:[
+    {label:'Gastronomía',data:D.tipo.map(d=>d.gpc),backgroundColor:DCA[0],borderRadius:2},
+    {label:'Infraestructura',data:D.tipo.map(d=>d.ipc),backgroundColor:DCA[1],borderRadius:2},
+    {label:'Sostenibilidad',data:D.tipo.map(d=>d.spc),backgroundColor:DCA[2],borderRadius:2},
+    {label:'Alojamiento',data:D.tipo.map(d=>d.apc),backgroundColor:DCA[3],borderRadius:2},
+    {label:'Servicio',data:D.tipo.map(d=>d.vpc),backgroundColor:DCA[4],borderRadius:2}
+  ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:false,ticks:{font:{size:8},maxRotation:40},grid:GR},y:{ticks:{callback:v=>v+'%'},grid:GR}},plugins:{legend:{position:'bottom'}}}});
+  const w=document.getElementById('tipo-t');if(!w)return;
+  let h=`<table class="dt"><thead><tr><th>Tipo</th><th>ZOIT</th><th>Reseñas</th><th>Rating</th><th>% Brechas</th><th>Dim. dominante</th></tr></thead><tbody>`;
+  [...D.tipo].sort((a,b)=>b.r-a.r).forEach(d=>{
+    const dims=[{k:'gpc',l:'Gastronomía'},{k:'ipc',l:'Infraestr.'},{k:'spc',l:'Sostenibil.'},{k:'apc',l:'Alojamiento'},{k:'vpc',l:'Servicio'}];
+    const dom=dims.reduce((b,c)=>d[c.k]>d[b.k]?c:b,dims[0]);
+    const rc=d.br<25?'#1a6b3c':d.br<35?'#c49a1a':'#8b1a1a';
+    h+=`<tr><td><strong>${d.t}</strong></td><td><span class="bdg ${d.z==='VE'?'bn':'bt'}">${lb(d.z)}</span></td><td>${d.n}</td><td style="font-weight:600">${d.r.toFixed(2)}</td><td style="color:${rc};font-weight:600">${d.br}%</td><td><span class="bdg bnu">${dom.l}</span></td></tr>`;
+  });
+  w.innerHTML=h+'</tbody></table>';
+}
+
+function rBrechas(){
+  const locs=fl();
+  const sorted=[...locs].sort((a,b)=>b.br-a.br);
+  mc('c-brloc',{type:'bar',data:{labels:sorted.map(l=>l.l),datasets:[{data:sorted.map(l=>l.br),backgroundColor:sorted.map(l=>l.br>40?'rgba(224,92,58,.8)':l.br>30?'rgba(196,154,26,.8)':'rgba(42,140,122,.6)'),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{beginAtZero:true,max:60,grid:GR,ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+  rBrList('all');
+}
+
+function filtBr(f,btn){
+  document.querySelectorAll('.bf-row .bf').forEach(b=>b.className='bf');
+  btn.className='bf '+(f==='all'?'fa':f==='VE'?'fe':'fp');
+  rBrList(f);
+}
+
+function rBrList(f){
+  const list=document.getElementById('br-list');if(!list)return;
+  const brs=f==='all'?D.br:D.br.filter(b=>b.z===f);
+  list.innerHTML=brs.map(b=>`<div class="bi ${b.z==='VE'?'be':'bp'}"><div class="bi-meta"><span class="bi-lugar">${b.lugar}</span><span class="bi-loc">${b.l}</span><span class="bdg ${b.z==='VE'?'bn':'bt'}">${lb(b.z)}</span><span class="bdg bnu">Rating ${b.r}</span></div><div class="bi-q">"${b.f}"</div></div>`).join('');
+}
+
+function rTurista(){
+  const TL=['Astroturismo','Aventura','Familia','Gastronómico','General','Naturaleza','Pareja'];
+  const TK=['astro','av','fam','gast','gen','nat','par'];
+  const TC=['#1e3a5f','#2a8c7a','#c49a1a','#e05c3a','#7a7570','#2e6b4a','#6b3a8b'];
+  const e=D.tur.find(t=>t.z==='VE'),p=D.tur.find(t=>t.z==='PQ');
+  const don=(id,d)=>mc(id,{type:'doughnut',data:{labels:TL,datasets:[{data:TK.map(k=>d[k]),backgroundColor:TC,borderWidth:4,borderColor:'#fff',hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{padding:11,font:{size:11}}}}}});
+  if(e)don('c-te',e);if(p)don('c-tp',p);
+  mc('c-tcomp',{type:'bar',data:{labels:TL,datasets:[{label:'Valle del Elqui',data:e?TK.map(k=>e[k]):[],backgroundColor:CE,borderRadius:4,borderSkipped:false},{label:'Pichidangui–Q.',data:p?TK.map(k=>p[k]):[],backgroundColor:CP,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:GR},y:{beginAtZero:true,grid:GR}},plugins:{legend:{position:'bottom'}}}});
+}
+
+function ra(){
+  const s=document.querySelector('.section.active');if(!s)return;
+  const id=s.id;
+  if(id==='m02')rResumen();
+  else if(id==='m03')rAtributos();
+  else if(id==='m04')rLocalidades();
+  else if(id==='m05')rMadurez();
+  else if(id==='m06')rEstablecimientos();
+  else if(id==='m07')rBrechas();
+  else if(id==='m08')rTurista();
+}
+</script>
+</body>
+</html>
