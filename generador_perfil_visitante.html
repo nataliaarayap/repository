@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Perfil de Visitante — FRDP Turismo Sostenible</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0f2340;
+  --teal: #1D9E75; --teal-light: #E1F5EE; --teal-mid: #0F6E56;
+  --terracotta: #D85A30; --terracotta-light: #FAECE7;
+  --amber: #BA7517; --amber-light: #FAEEDA;
+  --violet: #534AB7; --violet-light: #EEEDFE;
+  --blue: #185FA5; --blue-light: #E6F1FB;
+  --gold: #c9a84c;
+  --off-white: #f8f6f1;
+  --text-main: #1a1a2e;
+  --text-muted: #5a5a72;
+  --border: rgba(15,35,64,0.10);
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-main); min-height: 100vh; }
+
+header { background: var(--navy); }
+.header-stripe { height: 4px; background: linear-gradient(90deg, var(--teal) 0%, var(--teal) 40%, var(--gold) 40%, var(--gold) 60%, var(--terracotta) 60%, var(--terracotta) 100%); }
+.header-inner { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 2rem; }
+.header-inner h1 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 600; color: #fff; line-height: 1.2; }
+.header-inner p { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin-top: 0.4rem; font-weight: 300; letter-spacing: 0.04em; text-transform: uppercase; }
+.header-meta { margin-top: 0.75rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.meta-pill { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.12); padding: 3px 10px; border-radius: 2px; }
+
+main { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+/* FORMULARIO */
+.form-card { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 2rem; margin-bottom: 2rem; }
+.form-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+.form-group select { border: 1px solid var(--border); border-radius: 3px; padding: 0.6rem 0.9rem; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text-main); background: var(--off-white); outline: none; cursor: pointer; transition: border-color 0.2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%235a5a72' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem; }
+.form-group select:focus { border-color: var(--teal); background-color: #fff; }
+.form-btn { margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.btn-primary { background: var(--navy); color: #fff; border: none; border-radius: 3px; padding: 0.7rem 1.75rem; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px; }
+.btn-primary:hover { background: var(--teal-mid); }
+.btn-secondary { background: none; border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 1.25rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+.btn-secondary:hover { border-color: var(--text-muted); color: var(--text-main); }
+.muestra-label { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--text-muted); margin-left: auto; }
+
+/* RESULTADO */
+.resultado { display: none; }
+.resultado.visible { display: block; }
+
+.resultado-header { background: var(--navy); border-radius: 4px 4px 0 0; padding: 1.5rem 2rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.resultado-zoit { font-size: 0.68rem; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+.resultado-titulo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #fff; font-weight: 600; }
+.resultado-muestra { text-align: right; flex-shrink: 0; }
+.resultado-n { font-size: 1.75rem; font-weight: 500; color: var(--teal); font-family: 'DM Mono', monospace; line-height: 1; }
+.resultado-nlabel { font-size: 0.68rem; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+.resultado-body { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 4px 4px; padding: 2rem; }
+
+.metricas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.metrica { background: var(--off-white); border-radius: 3px; padding: 1rem 1.1rem; }
+.metrica-valor { font-size: 1.6rem; font-weight: 500; font-family: 'DM Mono', monospace; line-height: 1; }
+.metrica-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'DM Mono', monospace; color: var(--text-muted); margin-top: 4px; }
+.metrica--teal .metrica-valor { color: var(--teal-mid); }
+.metrica--amber .metrica-valor { color: var(--amber); }
+.metrica--violet .metrica-valor { color: var(--violet); }
+
+.bloques-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.bloque { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+.bloque-header { padding: 0.6rem 1rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; font-weight: 500; }
+.bloque--teal .bloque-header { background: var(--teal-light); color: var(--teal-mid); }
+.bloque--terracotta .bloque-header { background: var(--terracotta-light); color: var(--terracotta); }
+.bloque--violet .bloque-header { background: var(--violet-light); color: var(--violet); }
+.bloque--amber .bloque-header { background: var(--amber-light); color: var(--amber); }
+.bloque--blue .bloque-header { background: var(--blue-light); color: var(--blue); }
+.bloque-body { padding: 0.9rem 1rem; background: #fff; }
+.bloque-item { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+.bloque-item:last-child { margin-bottom: 0; }
+.bloque-bar-wrap { flex: 1; height: 5px; background: var(--off-white); border-radius: 3px; overflow: hidden; }
+.bloque-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.bloque--teal .bloque-bar { background: var(--teal); }
+.bloque--terracotta .bloque-bar { background: var(--terracotta); }
+.bloque--violet .bloque-bar { background: var(--violet); }
+.bloque--amber .bloque-bar { background: var(--amber); }
+.bloque--blue .bloque-bar { background: var(--blue); }
+.bloque-item-label { font-size: 0.8rem; color: var(--text-main); min-width: 140px; }
+.bloque-item-pct { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--text-muted); min-width: 36px; text-align: right; }
+
+/* RESUMEN NARRATIVO */
+.narrativa { border-left: 3px solid var(--gold); padding: 1.25rem 1.5rem; background: rgba(201,168,76,0.04); border-radius: 0 3px 3px 0; margin-bottom: 1.5rem; }
+.narrativa-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; color: var(--amber); margin-bottom: 0.6rem; }
+.narrativa p { font-size: 0.88rem; line-height: 1.8; color: var(--text-main); }
+
+/* ICTS */
+.icts-wrap { border: 1px solid var(--border); border-radius: 3px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.icts-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; color: var(--text-muted); margin-bottom: 0.75rem; }
+.icts-track { height: 8px; background: var(--off-white); border-radius: 4px; overflow: hidden; position: relative; margin-bottom: 0.5rem; }
+.icts-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+.icts-labels { display: flex; justify-content: space-between; font-size: 0.65rem; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+.icts-score-row { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.4rem; }
+.icts-score-val { font-size: 1.4rem; font-weight: 500; font-family: 'DM Mono', monospace; }
+.icts-score-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+/* NOTA METODOLÓGICA */
+.nota-metod { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: 2px; padding: 0.9rem 1.1rem; font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-top: 1.5rem; }
+
+/* ACCIONES */
+.acciones { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.btn-accion { background: none; border: 1px solid var(--border); border-radius: 3px; padding: 0.55rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--text-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+.btn-accion:hover { border-color: var(--navy); color: var(--navy); }
+
+footer { background: var(--navy); padding: 1.5rem 2rem; text-align: center; margin-top: 0; }
+footer p { font-size: 0.72rem; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace; }
+
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .metricas-grid { grid-template-columns: 1fr 1fr; }
+  .bloques-grid { grid-template-columns: 1fr; }
+  main { padding: 1.5rem 1rem 3rem; }
+}
+@media print {
+  header, .form-card, .acciones, footer { display: none; }
+  .resultado { display: block !important; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-stripe"></div>
+  <div class="header-inner">
+    <h1>Generador de Perfil de Visitante</h1>
+    <p>Estudio de Mercado ZOIT · Región de Coquimbo 2026 · FRDP Turismo Sostenible</p>
+    <div class="header-meta">
+      <span class="meta-pill">525 encuestas</span>
+      <span class="meta-pill">2 ZOIT</span>
+      <span class="meta-pill">Sin costo · datos embebidos</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="form-card">
+    <div class="form-title">Selecciona los parámetros del perfil</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>ZOIT</label>
+        <select id="sel-zoit" onchange="actualizarMuestra()">
+          <option value="Valle_del_Elqui">Valle del Elqui</option>
+          <option value="Pichidangui_Quilimarí">Pichidangui–Quilimarí</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Grupo de viaje</label>
+        <select id="sel-grupo" onchange="actualizarMuestra()">
+          <option value="todos">Todos los grupos</option>
+          <option value="Familia hijos <12">Familia con hijos menores de 12</option>
+          <option value="Familia hijos 12-18">Familia con hijos 12–18</option>
+          <option value="En pareja sin hijos">En pareja sin hijos</option>
+          <option value="Con amigos">Con amigos</option>
+          <option value="Solo/a">Viajero/a solo/a</option>
+          <option value="Grupo organizado">Grupo organizado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-btn">
+      <button class="btn-primary" onclick="generarPerfil()">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M9 3.5l4 4-4 4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Generar perfil
+      </button>
+      <button class="btn-secondary" onclick="limpiar()">Limpiar</button>
+      <span class="muestra-label" id="muestra-label">n = 300</span>
+    </div>
+  </div>
+
+  <div class="resultado" id="resultado">
+    <!-- Se genera dinámicamente -->
+  </div>
+
+</main>
+
+<footer>
+  <p>Universidad Católica del Norte · ECIEM · FRDP - Formación y Gobernanza para el Turismo Sostenible · Coquimbo 2026</p>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DATOS CALCULADOS DESDE EL ESTUDIO DE MERCADO (n=525)
+// Fuente: resultados_estudio_de_mercado.xlsx · v07
+// ════════════════════════════════════════════════════════
+const DATOS = {"Valle_del_Elqui":{"n":300,"zoit":"Valle del Elqui","grupos":{"Familia hijos <12":{"n":88,"pct":29.3,"top_motivos":{"Astroturismo":24,"Descanso/relax":19,"Naturaleza/aventura":13},"top_aloj":{"Cabaña turística":33,"Camping":9},"top_edad":{"35-44":39,"25-34":20},"top_noches":{"2":21,"0 (visita de día)":17},"top_transporte":{"Automóvil propio":56,"Bus interurbano":20},"icts":53.8,"regreso_alta":70.5,"dap_gastar_mas":55.7,"recomienda_alta":79.5},"Con amigos":{"n":70,"pct":23.3,"top_motivos":{"Astroturismo":13,"Pisco/pisquera":12,"Descanso/relax":11},"top_aloj":{"Cabaña turística":23,"Camping":10,"Glamping/domo":7},"top_edad":{"35-44":27,"25-34":12},"top_noches":{"2":19,"3":17},"top_transporte":{"Automóvil propio":52,"Bus interurbano":9},"icts":55.9,"regreso_alta":72.9,"dap_gastar_mas":64.3,"recomienda_alta":78.6},"En pareja sin hijos":{"n":65,"pct":21.7,"top_motivos":{"Astroturismo":21,"Pisco/pisquera":8,"Descanso/relax":8},"top_aloj":{"Cabaña turística":22,"Hotel":7,"Hostal/residencial":7},"top_edad":{"35-44":24,"25-34":16},"top_noches":{"3":20,"2":17},"top_transporte":{"Automóvil propio":36,"Bus interurbano":14},"icts":53.5,"regreso_alta":75.4,"dap_gastar_mas":53.8,"recomienda_alta":83.1},"Familia hijos 12-18":{"n":37,"pct":12.3,"top_motivos":{"Descanso/relax":9,"Astroturismo":8,"Bienestar (tinajas/spa)":6},"top_aloj":{"Cabaña turística":15,"Casa familiar sin costo":5},"top_edad":{"35-44":15,"25-34":8},"top_noches":{"3":9,"2":7},"top_transporte":{"Automóvil propio":27,"Bus interurbano":7},"icts":52.0,"regreso_alta":83.8,"dap_gastar_mas":67.6,"recomienda_alta":73.0},"Solo/a":{"n":18,"pct":6.0,"top_motivos":{"Naturaleza/aventura":4,"Descanso/relax":3,"Bienestar (tinajas/spa)":3},"top_aloj":{"Cabaña turística":4,"Glamping/domo":3,"Camping":2},"top_edad":{"35-44":6,"45-54":5},"top_noches":{"2":6,"1":4},"top_transporte":{"Automóvil propio":9,"Avión":3},"icts":52.6,"regreso_alta":61.1,"dap_gastar_mas":61.1,"recomienda_alta":94.4},"Grupo organizado":{"n":14,"pct":4.7,"top_motivos":{"Pisco/pisquera":4,"Descanso/relax":3,"Gastronomía":2},"top_aloj":{"Cabaña turística":4,"Hostal/residencial":3,"Camping":2},"top_edad":{"25-34":7,"35-44":4},"top_noches":{"1":5,"2":4},"top_transporte":{"Automóvil propio":8,"Automóvil arrendado":2},"icts":47.8,"regreso_alta":71.4,"dap_gastar_mas":71.4,"recomienda_alta":85.7}}},"Pichidangui_Quilimarí":{"n":225,"zoit":"Pichidangui-Quilimarí","grupos":{"En pareja sin hijos":{"n":56,"pct":24.9,"top_motivos":{"Turismo de playa":16,"Descanso/relax":9,"Deportes náuticos":8},"top_aloj":{"Cabaña turística":13,"Hostal/residencial":7,"Camping":7},"top_edad":{"35-44":21,"25-34":14},"top_noches":{"1":17,"2":16},"top_transporte":{"Automóvil propio":34,"Bus interurbano":9},"icts":53.4,"regreso_alta":73.2,"dap_gastar_mas":58.9,"recomienda_alta":80.4},"Con amigos":{"n":52,"pct":23.1,"top_motivos":{"Turismo de playa":12,"Naturaleza/aventura":9,"Descanso/relax":8},"top_aloj":{"Camping":12,"Cabaña turística":9,"Lodge/turismo naturaleza":7},"top_edad":{"25-34":16,"35-44":14},"top_noches":{"2":18,"1":13},"top_transporte":{"Automóvil propio":36,"Bus interurbano":5},"icts":55.1,"regreso_alta":73.1,"dap_gastar_mas":55.8,"recomienda_alta":90.4},"Familia hijos <12":{"n":52,"pct":23.1,"top_motivos":{"Turismo de playa":10,"Deportes náuticos":8,"Cultura/patrimonio":8},"top_aloj":{"Camping":9,"Cabaña turística":9},"top_edad":{"35-44":18,"25-34":17},"top_noches":{"2":17,"1":12},"top_transporte":{"Automóvil propio":34,"Bus interurbano":9},"icts":52.3,"regreso_alta":67.3,"dap_gastar_mas":53.8,"recomienda_alta":75.0},"Solo/a":{"n":27,"pct":12.0,"top_motivos":{"Turismo de playa":8,"Deportes náuticos":6,"Descanso/relax":4},"top_aloj":{"Casa/Depto privado":5,"Cabaña turística":5,"Hostal/residencial":4},"top_edad":{"35-44":10,"25-34":9},"top_noches":{"2":11,"1":6},"top_transporte":{"Automóvil propio":19,"Avión":3},"icts":56.4,"regreso_alta":55.6,"dap_gastar_mas":51.9,"recomienda_alta":66.7},"Familia hijos 12-18":{"n":24,"pct":10.7,"top_motivos":{"Naturaleza/aventura":6,"Descanso/relax":5,"Turismo de playa":5},"top_aloj":{"Cabaña turística":4,"Glamping/domo":3,"Camping":3},"top_edad":{"45-54":6,"35-44":5},"top_noches":{"3":8,"1":4},"top_transporte":{"Automóvil propio":17,"Bus interurbano":3},"icts":56.1,"regreso_alta":62.5,"dap_gastar_mas":62.5,"recomienda_alta":91.7},"Grupo organizado":{"n":12,"pct":5.3,"top_motivos":{"Turismo de playa":5,"Bienestar valle interior":2,"Cultura/patrimonio":1},"top_aloj":{"Glamping/domo":2,"Casa familiar sin costo":2},"top_edad":{"45-54":4,"25-34":2},"top_noches":{"2":4,"0 (visita de día)":4},"top_transporte":{"Automóvil propio":6,"Automóvil arrendado":2},"icts":57.6,"regreso_alta":50.0,"dap_gastar_mas":75.0,"recomienda_alta":91.7}}}};
+
+// ════════════════════════════════════════════════════════
+// LÓGICA DEL GENERADOR
+// ════════════════════════════════════════════════════════
+
+function getICTSColor(score) {
+  if (score >= 70) return '#1D9E75';
+  if (score >= 55) return '#BA7517';
+  return '#D85A30';
+}
+
+function getICTSDesc(score) {
+  if (score >= 70) return 'Madurez turística alta';
+  if (score >= 55) return 'Madurez turística media';
+  return 'Madurez turística en desarrollo';
+}
+
+function pctDeN(n, total) { return Math.round(n / total * 100); }
+
+function topEntries(obj, total) {
+  return Object.entries(obj).map(([k, v]) => ({ label: k, n: v, pct: pctDeN(v, total) }));
+}
+
+function barrasHTML(entries, color) {
+  const max = entries[0]?.pct || 1;
+  return entries.map(e => `
+    <div class="bloque-item">
+      <span class="bloque-item-label">${e.label}</span>
+      <div class="bloque-bar-wrap">
+        <div class="bloque-bar" style="width:${Math.round(e.pct/max*100)}%"></div>
+      </div>
+      <span class="bloque-item-pct">${e.pct}%</span>
+    </div>`).join('');
+}
+
+function agregadoPorZOIT(zkey) {
+  const z = DATOS[zkey];
+  const grupos = z.grupos;
+  const total = z.n;
+
+  // Agregar motivos
+  const motivos = {};
+  const aloj = {};
+  const transporte = {};
+  const noches = {};
+  const edad = {};
+
+  for (const g of Object.values(grupos)) {
+    for (const [k, v] of Object.entries(g.top_motivos)) motivos[k] = (motivos[k]||0) + v;
+    for (const [k, v] of Object.entries(g.top_aloj)) aloj[k] = (aloj[k]||0) + v;
+    for (const [k, v] of Object.entries(g.top_transporte)) transporte[k] = (transporte[k]||0) + v;
+    for (const [k, v] of Object.entries(g.top_noches)) noches[k] = (noches[k]||0) + v;
+    for (const [k, v] of Object.entries(g.top_edad)) edad[k] = (edad[k]||0) + v;
+  }
+
+  const sort = obj => Object.fromEntries(Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,3));
+  const wAvg = (key) => {
+    let sum = 0, n = 0;
+    for (const g of Object.values(grupos)) { sum += g[key] * g.n; n += g.n; }
+    return Math.round(sum/n*10)/10;
+  };
+
+  return {
+    n: total,
+    pct: 100,
+    top_motivos: sort(motivos),
+    top_aloj: sort(aloj),
+    top_transporte: sort(transporte),
+    top_noches: sort(noches),
+    top_edad: sort(edad),
+    icts: wAvg('icts'),
+    regreso_alta: wAvg('regreso_alta'),
+    dap_gastar_mas: wAvg('dap_gastar_mas'),
+    recomienda_alta: wAvg('recomienda_alta')
+  };
+}
+
+function generarNarrativa(zoit, grupo, d) {
+  const zNombre = DATOS[zoit].zoit;
+  const gNombre = grupo === 'todos' ? 'el total de visitantes encuestados' : `el segmento "${grupo}"`;
+  const topMotivo = Object.keys(d.top_motivos)[0];
+  const topAloj = Object.keys(d.top_aloj)[0];
+  const topNoches = Object.keys(d.top_noches)[0];
+  const topTransporte = Object.keys(d.top_transporte)[0];
+  const topEdad = Object.keys(d.top_edad)[0];
+
+  const ictsDesc = getICTSDesc(d.icts);
+  const ficTxt = d.dap_gastar_mas >= 60 ? 'alta disposición a incrementar el gasto si la oferta lo justifica' : d.dap_gastar_mas >= 45 ? 'disposición moderada a incrementar el gasto' : 'baja disposición a incrementar el gasto';
+  const regTxt = d.regreso_alta >= 70 ? 'alta probabilidad de retorno' : d.regreso_alta >= 55 ? 'probabilidad moderada de retorno' : 'probabilidad de retorno por desarrollar';
+
+  return `En <strong>${zNombre}</strong>, ${gNombre} concentra el perfil de visitante con mayor representación en la muestra. El principal motivo de visita es <strong>${topMotivo}</strong>, con una estadía predominante de <strong>${topNoches.replace('0 (visita de día)', 'visita de día sin pernocta')} noches</strong>. El grupo etario más frecuente es <strong>${topEdad} años</strong>, desplazándose principalmente en <strong>${topTransporte.toLowerCase()}</strong>. En términos de alojamiento, la preferencia recae en <strong>${topAloj.toLowerCase()}</strong>. El Índice de Comportamiento Turístico Sostenible (ICTS) promedio es <strong>${d.icts}/100</strong>, lo que indica <strong>${ictsDesc}</strong>. Se registra una <strong>${ficTxt}</strong> y una <strong>${regTxt}</strong> (${d.regreso_alta}% califica su probabilidad de regreso como alta o muy alta).`;
+}
+
+function actualizarMuestra() {
+  const zoit = document.getElementById('sel-zoit').value;
+  const grupo = document.getElementById('sel-grupo').value;
+  const z = DATOS[zoit];
+  let n;
+  if (grupo === 'todos') { n = z.n; }
+  else { n = z.grupos[grupo]?.n || 0; }
+  document.getElementById('muestra-label').textContent = `n = ${n}`;
+}
+
+function generarPerfil() {
+  const zoit = document.getElementById('sel-zoit').value;
+  const grupo = document.getElementById('sel-grupo').value;
+  const z = DATOS[zoit];
+  const d = grupo === 'todos' ? agregadoPorZOIT(zoit) : z.grupos[grupo];
+
+  if (!d) {
+    alert('No hay datos para esta combinación.');
+    return;
+  }
+
+  const gLabel = grupo === 'todos' ? 'Todos los grupos' : grupo;
+  const ictsColor = getICTSColor(d.icts);
+  const motEntries = topEntries(d.top_motivos, d.n);
+  const alojEntries = topEntries(d.top_aloj, d.n);
+  const edadEntries = topEntries(d.top_edad, d.n);
+  const nochesEntries = topEntries(d.top_noches, d.n);
+  const transpEntries = topEntries(d.top_transporte, d.n);
+
+  const html = `
+    <div class="resultado-header">
+      <div>
+        <div class="resultado-zoit">${z.zoit}</div>
+        <div class="resultado-titulo">${gLabel}</div>
+      </div>
+      <div class="resultado-muestra">
+        <div class="resultado-n">${d.n}</div>
+        <div class="resultado-nlabel">encuestas</div>
+      </div>
+    </div>
+    <div class="resultado-body">
+
+      <div class="metricas-grid">
+        <div class="metrica metrica--teal">
+          <div class="metrica-valor">${d.regreso_alta}%</div>
+          <div class="metrica-label">Prob. regreso alta o muy alta</div>
+        </div>
+        <div class="metrica metrica--amber">
+          <div class="metrica-valor">${d.dap_gastar_mas}%</div>
+          <div class="metrica-label">DAP gastar más si oferta mejora</div>
+        </div>
+        <div class="metrica metrica--violet">
+          <div class="metrica-valor">${d.recomienda_alta}%</div>
+          <div class="metrica-label">Prob. recomendar alta o muy alta</div>
+        </div>
+      </div>
+
+      <div class="narrativa">
+        <div class="narrativa-label">Resumen del perfil</div>
+        <p>${generarNarrativa(zoit, grupo, d)}</p>
+      </div>
+
+      <div class="icts-wrap">
+        <div class="icts-label">Índice de Comportamiento Turístico Sostenible (ICTS)</div>
+        <div class="icts-score-row">
+          <span class="icts-score-val" style="color:${ictsColor}">${d.icts}</span>
+          <span class="icts-score-desc">/ 100 · ${getICTSDesc(d.icts)}</span>
+        </div>
+        <div class="icts-track">
+          <div class="icts-fill" style="width:${d.icts}%;background:${ictsColor}"></div>
+        </div>
+        <div class="icts-labels"><span>0 · bajo</span><span>50 · medio</span><span>100 · alto</span></div>
+      </div>
+
+      <div class="bloques-grid">
+        <div class="bloque bloque--teal">
+          <div class="bloque-header">Motivo de visita</div>
+          <div class="bloque-body">${barrasHTML(motEntries, 'teal')}</div>
+        </div>
+        <div class="bloque bloque--terracotta">
+          <div class="bloque-header">Tipo de alojamiento</div>
+          <div class="bloque-body">${barrasHTML(alojEntries, 'terracotta')}</div>
+        </div>
+        <div class="bloque bloque--violet">
+          <div class="bloque-header">Rango etario</div>
+          <div class="bloque-body">${barrasHTML(edadEntries, 'violet')}</div>
+        </div>
+        <div class="bloque bloque--amber">
+          <div class="bloque-header">Noches de estadía</div>
+          <div class="bloque-body">${barrasHTML(nochesEntries, 'amber')}</div>
+        </div>
+      </div>
+
+      <div class="bloque bloque--blue" style="margin-bottom:0">
+        <div class="bloque-header">Medio de transporte principal</div>
+        <div class="bloque-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem">${barrasHTML(transpEntries, 'blue')}</div>
+      </div>
+
+      <div class="nota-metod">
+        <strong>Nota metodológica:</strong> Resultados basados en prototipo de estudio de mercado simulado (ZOIT Región de Coquimbo 2026, n=525). Los porcentajes mostrados corresponden a la distribución observada en la submuestra seleccionada. ICTS calculado sobre escala 0–100 a partir de variables de comportamiento sostenible declarado. DAP = Disposición a Pagar.
+      </div>
+
+      <div class="acciones">
+        <button class="btn-accion" onclick="window.print()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="4" width="9" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2h5v2M4 10h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Imprimir / PDF
+        </button>
+        <button class="btn-accion" onclick="copiarResumen()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 9V2h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Copiar resumen
+        </button>
+      </div>
+    </div>`;
+
+  const el = document.getElementById('resultado');
+  el.innerHTML = html;
+  el.classList.add('visible');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function limpiar() {
+  document.getElementById('resultado').classList.remove('visible');
+  document.getElementById('sel-zoit').value = 'Valle_del_Elqui';
+  document.getElementById('sel-grupo').value = 'todos';
+  actualizarMuestra();
+}
+
+function copiarResumen() {
+  const narrativa = document.querySelector('.narrativa p');
+  if (!narrativa) return;
+  const texto = narrativa.innerText;
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = event.target.closest('.btn-accion');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copiado';
+    setTimeout(() => btn.innerHTML = orig, 2000);
+  });
+}
+
+// Init
+actualizarMuestra();
+</script>
+</body>
+</html>
