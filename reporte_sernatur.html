@@ -324,11 +324,11 @@ canvas{max-width:100%}
 
     <!-- Evolución anual -->
     <div class="section">
-      <div class="section-hdr"><span class="section-num">01</span><div><div class="section-title">Evolución Anual</div><div class="section-note">Millones de viajes por macrozona de destino</div></div></div>
+      <div class="section-hdr"><span class="section-num">01</span><div><div class="section-title">Evolución Anual</div><div class="section-note">Viajes por temporada y macrozona de destino</div></div></div>
       <div class="g31">
         <div class="card">
           <div class="card-title">Viajes anuales por macrozona</div>
-          <div class="card-note">Miles de viajes — período 2019–2025</div>
+          <div class="card-note">Viajes por año, 2019–2025</div>
           <div class="chart-box" style="height:280px"><canvas id="nacAnualChart"></canvas></div>
         </div>
         <div class="card">
@@ -345,19 +345,25 @@ canvas{max-width:100%}
       <div class="g2">
         <div class="card">
           <div class="card-title">Curva mensual nacional</div>
-          <div class="card-note">Miles de viajes por mes — año seleccionado</div>
+          <div class="card-note">Viajes por mes — año seleccionado</div>
           <div class="chart-box" style="height:250px"><canvas id="nacMesChart"></canvas></div>
         </div>
         <div class="card">
           <div class="card-title">Comparativa verano vs invierno</div>
-          <div class="card-note">Millones de viajes por macrozona</div>
+          <div class="card-note">Viajes por temporada y macrozona</div>
           <div class="chart-box" style="height:250px"><canvas id="nacViChart"></canvas></div>
         </div>
       </div>
       <div class="card g1">
         <div class="card-title">Heatmap de concentración estacional</div>
         <div class="card-note">Índice relativo de viajes — intensidad por macrozona y mes</div>
-        <div style="overflow-x:auto;margin-top:0.75rem" id="nacHeat"></div>
+        <div style="display:flex;gap:1.75rem;align-items:flex-start;margin-top:0.9rem;flex-wrap:wrap">
+          <div style="overflow-x:auto;flex:0 0 auto" id="nacHeat"></div>
+          <div style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:0.9rem 1.1rem;font-size:0.79rem;color:var(--ink-soft);line-height:1.55">
+            <strong style="color:var(--ink-mid)">¿Cómo leerlo?</strong><br>
+            El índice compara los viajes de cada mes con el promedio mensual de esa macrozona durante el año. Un valor de <strong>1,0</strong> equivale al promedio; valores por sobre 1 indican meses con más concentración de viajes que el promedio anual, y valores por debajo de 1 indican meses de menor demanda relativa. Los tonos más oscuros marcan los meses de mayor intensidad.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -367,12 +373,12 @@ canvas{max-width:100%}
       <div class="g2">
         <div class="card">
           <div class="card-title">Top 10 destinos</div>
-          <div class="card-note">Miles de viajes — año seleccionado</div>
+          <div class="card-note">Viajes — año seleccionado</div>
           <div id="nacDestList"></div>
         </div>
         <div class="card">
           <div class="card-title">Comparativa verano / invierno</div>
-          <div class="card-note">Top 8 destinos — miles de viajes por temporada</div>
+          <div class="card-note">Top 8 destinos — viajes por temporada</div>
           <div class="chart-box" style="height:320px"><canvas id="nacDestChart"></canvas></div>
         </div>
       </div>
@@ -561,6 +567,10 @@ canvas{max-width:100%}
     <div class="section">
       <div class="section-hdr"><span class="section-num">01</span><div><div class="section-title">Comparativa General</div><div class="section-note">Métricas principales de cada ZOIT — período completo 2019–2025</div></div></div>
 
+      <div style="background:var(--gold-pale);border:1px solid #e8d9a8;border-radius:6px;padding:0.75rem 1.1rem;margin-bottom:1.25rem;font-size:0.8rem;color:var(--ink-mid);line-height:1.55">
+        <strong>¿Qué es el índice estacional?</strong> Es la razón entre los viajes registrados en los meses de verano (diciembre a marzo) y los de invierno (junio a agosto). Un valor de <strong>2,0</strong>, por ejemplo, significa que en verano se reciben el doble de viajes que en invierno. A mayor índice, más concentrada está la demanda en temporada estival.
+      </div>
+
       <div class="compare-grid">
         <div class="card">
           <div class="zoit-badge elqui">
@@ -606,7 +616,7 @@ canvas{max-width:100%}
 
     <!-- Estacionalidad ZOIT -->
     <div class="section">
-      <div class="section-hdr"><span class="section-num">03</span><div><div class="section-title">Estacionalidad por ZOIT</div><div class="section-note">Curva mensual de visitas — año seleccionado</div></div></div>
+      <div class="section-hdr"><span class="section-num">03</span><div><div class="section-title">Estacionalidad por ZOIT</div><div class="section-note">Curva mensual de visitas — total acumulado 2019–2025 (la fuente no permite desagregar por año a este nivel)</div></div></div>
       <div class="g2">
         <div class="card">
           <div class="card-title">Valle del Elqui — mensual</div>
@@ -646,7 +656,7 @@ canvas{max-width:100%}
       </div>
       <div class="insight">
         <div class="insight-t">Pichidangui: destino de largo alcance</div>
-        <div class="insight-b">Pichidangui recibe <span class="hn">3.4x más viajes</span> que el Valle del Elqui en términos absolutos. Sus principales orígenes son Rancagua, Puente Alto y Maipú — zonas metropolitanas del eje central del país.</div>
+        <div class="insight-b">El Litoral Pichidangui recibe <span class="hn">837.417 viajes más</span> que el Valle del Elqui en el período acumulado (un 36% por sobre su volumen). Sus principales orígenes son Rancagua, Puente Alto y Maipú — zonas metropolitanas del eje central del país.</div>
       </div>
       <div class="insight g">
         <div class="insight-t">Impacto COVID diferenciado</div>
@@ -675,95 +685,9 @@ const D = {
   C: { Norte:'#0c6b72', Centro:'#bf3517', Sur:'#2e7d44', Austral:'#5646c4', teal:'#0c6b72', red:'#bf3517', gold:'#b5870f', violet:'#5646c4' },
 
   nacional: {
-    mes_by_year: {
-      '2019':[11.0,10.5, 5.6,4.1,3.9,4.3,5.1,4.4,5.5,5.7,4.2,6.3],
-      '2020':[11.5,10.3, 4.0,1.0,1.2,1.5,2.5,2.8,4.2,4.6,3.0,5.5],
-      '2021':[10.8, 9.8, 5.2,3.5,3.6,3.9,5.0,4.0,5.2,5.5,4.0,6.0],
-      '2022':[13.2,12.6, 6.5,5.0,4.8,5.5,7.0,5.8,6.5,6.8,5.2,7.8],
-      '2023':[13.3,12.7, 6.6,5.1,4.9,5.6,7.1,5.9,6.6,6.9,5.3,7.9],
-      '2024':[13.5,13.0, 6.8,5.2,5.0,5.8,7.3,6.0,6.8,7.1,5.5,8.1],
-      '2025':[11.8,11.2, 5.8,4.5,4.3,5.2,6.5,5.4,6.2,6.5,5.0,7.4]
-    },
-    top_dest_by_year: {
-      '2019':[
-        {d:'Resto RM Santiago',v:3920,ve:1060,i:930,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:3680,ve:1670,i:680,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:2930,ve:930,i:690,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:1960,ve:1150,i:260,mz:'Centro',reg:'Valparaíso'},
-        {d:'Litoral Viña del Mar-Concón',v:1770,ve:850,i:360,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1730,ve:720,i:350,mz:'Norte',reg:'Coquimbo'},
-        {d:'Cachapoal',v:1370,ve:490,i:305,mz:'Centro',reg:"O'Higgins"},
-        {d:'Araucanía Lacustre',v:1356,ve:600,i:262,mz:'Sur',reg:'La Araucanía'},
-        {d:'Concepción y alrededores',v:1210,ve:400,i:278,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:1107,ve:468,i:235,mz:'Sur',reg:'Biobío'}
-      ],
-      '2020':[
-        {d:'Resto RM Santiago',v:2850,ve:780,i:650,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:2620,ve:1190,i:490,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:2100,ve:660,i:490,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:1430,ve:840,i:190,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1250,ve:520,i:250,mz:'Norte',reg:'Coquimbo'},
-        {d:'Litoral Viña del Mar-Concón',v:1250,ve:620,i:260,mz:'Centro',reg:'Valparaíso'},
-        {d:'Cachapoal',v:1000,ve:360,i:220,mz:'Centro',reg:"O'Higgins"},
-        {d:'Araucanía Lacustre',v:988,ve:439,i:190,mz:'Sur',reg:'La Araucanía'},
-        {d:'Concepción y alrededores',v:882,ve:290,i:202,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:810,ve:342,i:172,mz:'Sur',reg:'Biobío'}
-      ],
-      '2022':[
-        {d:'Resto RM Santiago',v:4200,ve:1170,i:980,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:3950,ve:1780,i:730,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:3150,ve:1000,i:740,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:2100,ve:1230,i:278,mz:'Centro',reg:'Valparaíso'},
-        {d:'Litoral Viña del Mar-Concón',v:1900,ve:910,i:386,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1855,ve:770,i:376,mz:'Norte',reg:'Coquimbo'},
-        {d:'Araucanía Lacustre',v:1455,ve:644,i:281,mz:'Sur',reg:'La Araucanía'},
-        {d:'Cachapoal',v:1470,ve:526,i:327,mz:'Centro',reg:"O'Higgins"},
-        {d:'Concepción y alrededores',v:1300,ve:430,i:298,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:1188,ve:502,i:252,mz:'Sur',reg:'Biobío'}
-      ],
-      '2023':[
-        {d:'Resto RM Santiago',v:4250,ve:1180,i:990,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:4000,ve:1800,i:738,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:3200,ve:1010,i:748,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:2120,ve:1240,i:281,mz:'Centro',reg:'Valparaíso'},
-        {d:'Litoral Viña del Mar-Concón',v:1920,ve:920,i:390,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1875,ve:780,i:380,mz:'Norte',reg:'Coquimbo'},
-        {d:'Araucanía Lacustre',v:1470,ve:651,i:284,mz:'Sur',reg:'La Araucanía'},
-        {d:'Cachapoal',v:1485,ve:531,i:330,mz:'Centro',reg:"O'Higgins"},
-        {d:'Concepción y alrededores',v:1315,ve:434,i:301,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:1200,ve:507,i:255,mz:'Sur',reg:'Biobío'}
-      ],
-      '2024':[
-        {d:'Resto RM Santiago',v:4350,ve:1210,i:1010,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:4100,ve:1850,i:756,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:3290,ve:1040,i:768,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:2180,ve:1276,i:289,mz:'Centro',reg:'Valparaíso'},
-        {d:'Litoral Viña del Mar-Concón',v:1980,ve:950,i:400,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1930,ve:803,i:391,mz:'Norte',reg:'Coquimbo'},
-        {d:'Cachapoal',v:1530,ve:548,i:340,mz:'Centro',reg:"O'Higgins"},
-        {d:'Araucanía Lacustre',v:1510,ve:669,i:292,mz:'Sur',reg:'La Araucanía'},
-        {d:'Concepción y alrededores',v:1355,ve:447,i:310,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:1237,ve:522,i:263,mz:'Sur',reg:'Biobío'}
-      ],
-      '2025':[
-        {d:'Resto RM Santiago',v:3920,ve:1090,i:910,mz:'Centro',reg:'RM'},
-        {d:'Litoral de los Poetas',v:3700,ve:1665,i:682,mz:'Centro',reg:'Valparaíso'},
-        {d:'Santiago Urbano',v:2960,ve:936,i:692,mz:'Centro',reg:'RM'},
-        {d:'Litoral Ritoque-Los Molles',v:1966,ve:1150,i:260,mz:'Centro',reg:'Valparaíso'},
-        {d:'Litoral Viña del Mar-Concón',v:1784,ve:856,i:361,mz:'Centro',reg:'Valparaíso'},
-        {d:'La Serena-Coquimbo',v:1742,ve:726,i:353,mz:'Norte',reg:'Coquimbo'},
-        {d:'Cachapoal',v:1380,ve:494,i:307,mz:'Centro',reg:"O'Higgins"},
-        {d:'Araucanía Lacustre',v:1362,ve:604,i:264,mz:'Sur',reg:'La Araucanía'},
-        {d:'Concepción y alrededores',v:1222,ve:403,i:280,mz:'Sur',reg:'Biobío'},
-        {d:'Saltos del Laja',v:1114,ve:472,i:237,mz:'Sur',reg:'Biobío'}
-      ]
-    },
-    mz_year: {
-      Norte:  {'2019':7990,'2020':5530,'2021':6770,'2022':8680,'2023':9080,'2024':9340,'2025':7720},
-      Centro: {'2019':28240,'2020':20160,'2021':25170,'2022':30800,'2023':31100,'2024':31730,'2025':32270},
-      Sur:    {'2019':13000,'2020':9520,'2021':12430,'2022':15030,'2023':14960,'2024':15420,'2025':12820},
-      Austral:{'2019':5450,'2020':3980,'2021':4730,'2022':5640,'2023':5410,'2024':5090,'2025':4100}
-    }
+    mz_year: {"Norte": {"2019": 7986020, "2020": 5921541, "2021": 7272671, "2022": 8360268, "2023": 8591946, "2024": 8911826, "2025": 8047949}, "Centro": {"2019": 28973854, "2020": 20369016, "2021": 25847852, "2022": 32489530, "2023": 32813981, "2024": 32268888, "2025": 26716168}, "Sur": {"2019": 13397294, "2020": 10033029, "2021": 12276363, "2022": 14633687, "2023": 14481514, "2024": 15332593, "2025": 13025257}, "Austral": {"2019": 4333225, "2020": 2861258, "2021": 3712039, "2022": 4637696, "2023": 4654514, "2024": 5074943, "2025": 4104140}},
+    mes_by_year: {"2019": [7620516, 7631246, 3608017, 2799933, 3546398, 3423282, 5033074, 3762082, 4684492, 3635651, 3511893, 5433809], "2020": [8473431, 9064202, 2692914, 763414, 892487, 845053, 1211277, 1696360, 2160642, 3175274, 4214438, 3995352], "2021": [4554620, 4783005, 2443513, 1333941, 2610890, 2597952, 5185913, 4135636, 5285239, 5384516, 4370238, 6423462], "2022": [7954119, 7236264, 4316924, 4225194, 3571896, 4007760, 4796480, 3974801, 5278322, 5167090, 3793278, 5799053], "2023": [8158780, 7792936, 4134436, 4540187, 3444164, 3923831, 4640240, 4001318, 5396755, 4905425, 3681897, 5921986], "2024": [8220663, 7534231, 4908835, 3803299, 3451241, 4295463, 4605706, 4379281, 5249602, 5144393, 3755396, 6240140], "2025": [8988354, 8106229, 4203812, 3862947, 3399024, 4544966, 4981763, 4069780, 4913232, 4823407, 0, 0]},
+    top_dest_by_year: {"2019": [{"d": "Resto región Metropolitana de Santiago", "v": 4497675, "ve": 1660331, "i": 1166605, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral de los Poetas", "v": 3647316, "ve": 2024294, "i": 629456, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Santiago Urbano", "v": 3580356, "ve": 1259208, "i": 1017262, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Viña del Mar - Concón", "v": 1873382, "ve": 925052, "i": 403851, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1855368, "ve": 878379, "i": 472564, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Litoral Ritoque-Los Molles", "v": 1819429, "ve": 969175, "i": 329574, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Cachapoal", "v": 1445149, "ve": 546673, "i": 344020, "mz": "Centro", "reg": "Libertador General Bernardo O'Higgins"}, {"d": "Araucanía Lacustre", "v": 1382780, "ve": 859921, "i": 217030, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Concepción y alrededores", "v": 1371558, "ve": 550017, "i": 329758, "mz": "Sur", "reg": "Biobío"}, {"d": "Resto región Biobío", "v": 1234659, "ve": 537683, "i": 259889, "mz": "Sur", "reg": "Biobío"}], "2020": [{"d": "Litoral de los Poetas", "v": 3072658, "ve": 2128480, "i": 97478, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Resto región Metropolitana de Santiago", "v": 2789490, "ve": 1480949, "i": 288260, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Santiago Urbano", "v": 1704418, "ve": 948628, "i": 162622, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Ritoque-Los Molles", "v": 1607140, "ve": 1075335, "i": 65737, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1352859, "ve": 970131, "i": 78918, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Litoral Viña del Mar - Concón", "v": 1203553, "ve": 850731, "i": 47995, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Araucanía Lacustre", "v": 1148973, "ve": 965020, "i": 65602, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Costa Maule", "v": 1074002, "ve": 715509, "i": 77183, "mz": "Centro", "reg": "Maule"}, {"d": "Resto región Biobío", "v": 947163, "ve": 538396, "i": 133734, "mz": "Sur", "reg": "Biobío"}, {"d": "Resto región La Araucanía", "v": 859923, "ve": 480447, "i": 133825, "mz": "Sur", "reg": "La Araucanía"}], "2021": [{"d": "Resto región Metropolitana de Santiago", "v": 3678100, "ve": 1229064, "i": 893950, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral de los Poetas", "v": 3500227, "ve": 1424698, "i": 886455, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Santiago Urbano", "v": 2350519, "ve": 720223, "i": 607593, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Ritoque-Los Molles", "v": 2089132, "ve": 935305, "i": 499885, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1660488, "ve": 701556, "i": 397027, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Litoral Viña del Mar - Concón", "v": 1608153, "ve": 548307, "i": 474798, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Araucanía Lacustre", "v": 1242687, "ve": 640284, "i": 227448, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Resto región Biobío", "v": 1141394, "ve": 420576, "i": 270098, "mz": "Sur", "reg": "Biobío"}, {"d": "Costa Maule", "v": 1132770, "ve": 465322, "i": 257645, "mz": "Centro", "reg": "Maule"}, {"d": "Valle del Maipo", "v": 1117549, "ve": 401028, "i": 244889, "mz": "Centro", "reg": "Metropolitana de Santiago"}], "2022": [{"d": "Resto región Metropolitana de Santiago", "v": 4738269, "ve": 1595380, "i": 1084569, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral de los Poetas", "v": 4253430, "ve": 2098516, "i": 794772, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Santiago Urbano", "v": 3523524, "ve": 1048010, "i": 839364, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Ritoque-Los Molles", "v": 2289157, "ve": 1161458, "i": 441705, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Litoral Viña del Mar - Concón", "v": 2032485, "ve": 915614, "i": 437896, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1959714, "ve": 1003620, "i": 379942, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Cachapoal", "v": 1613563, "ve": 544051, "i": 375579, "mz": "Centro", "reg": "Libertador General Bernardo O'Higgins"}, {"d": "Araucanía Lacustre", "v": 1597337, "ve": 980603, "i": 242355, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Concepción y alrededores", "v": 1402730, "ve": 502520, "i": 328603, "mz": "Sur", "reg": "Biobío"}, {"d": "Valle del Maipo", "v": 1384331, "ve": 563580, "i": 253903, "mz": "Centro", "reg": "Metropolitana de Santiago"}], "2023": [{"d": "Resto región Metropolitana de Santiago", "v": 4748761, "ve": 1665512, "i": 1107583, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral de los Poetas", "v": 4290809, "ve": 2123103, "i": 781683, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Santiago Urbano", "v": 3638407, "ve": 1175616, "i": 865661, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Ritoque-Los Molles", "v": 2275783, "ve": 1220976, "i": 413162, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Litoral Viña del Mar - Concón", "v": 2102056, "ve": 985622, "i": 425368, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1950914, "ve": 1011305, "i": 378949, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Cachapoal", "v": 1770927, "ve": 624632, "i": 406549, "mz": "Centro", "reg": "Libertador General Bernardo O'Higgins"}, {"d": "Araucanía Lacustre", "v": 1520860, "ve": 911029, "i": 243199, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Concepción y alrededores", "v": 1424280, "ve": 496922, "i": 355915, "mz": "Sur", "reg": "Biobío"}, {"d": "Valle del Maipo", "v": 1365713, "ve": 571420, "i": 238877, "mz": "Centro", "reg": "Metropolitana de Santiago"}], "2024": [{"d": "Resto región Metropolitana de Santiago", "v": 4644855, "ve": 1623062, "i": 1130171, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral de los Poetas", "v": 4170519, "ve": 2132888, "i": 741078, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Santiago Urbano", "v": 3841390, "ve": 1248856, "i": 968749, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Ritoque-Los Molles", "v": 2180181, "ve": 1170001, "i": 385899, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Litoral Viña del Mar - Concón", "v": 2054705, "ve": 964604, "i": 417323, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1991959, "ve": 1026581, "i": 391289, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Cachapoal", "v": 1743951, "ve": 605895, "i": 408392, "mz": "Centro", "reg": "Libertador General Bernardo O'Higgins"}, {"d": "Araucanía Lacustre", "v": 1570981, "ve": 943970, "i": 265161, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Concepción y alrededores", "v": 1465181, "ve": 508747, "i": 372354, "mz": "Sur", "reg": "Biobío"}, {"d": "Resto región Biobío", "v": 1381017, "ve": 592904, "i": 302305, "mz": "Sur", "reg": "Biobío"}], "2025": [{"d": "Litoral de los Poetas", "v": 3910979, "ve": 1660357, "i": 1028427, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Resto región Metropolitana de Santiago", "v": 3452054, "ve": 1225619, "i": 987799, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Santiago Urbano", "v": 2865795, "ve": 823690, "i": 1016848, "mz": "Centro", "reg": "Metropolitana de Santiago"}, {"d": "Litoral Viña del Mar - Concón", "v": 1997291, "ve": 666533, "i": 565906, "mz": "Centro", "reg": "Valparaíso"}, {"d": "Litoral Ritoque-Los Molles", "v": 1949027, "ve": 821867, "i": 497822, "mz": "Centro", "reg": "Valparaíso"}, {"d": "La Serena - Coquimbo", "v": 1823078, "ve": 743056, "i": 497971, "mz": "Norte", "reg": "Coquimbo"}, {"d": "Araucanía Lacustre", "v": 1419696, "ve": 759230, "i": 333258, "mz": "Sur", "reg": "La Araucanía"}, {"d": "Cachapoal", "v": 1407468, "ve": 411467, "i": 446348, "mz": "Centro", "reg": "Libertador General Bernardo O'Higgins"}, {"d": "Concepción y alrededores", "v": 1345476, "ve": 465344, "i": 415376, "mz": "Sur", "reg": "Biobío"}, {"d": "Saltos del Laja", "v": 1195055, "ve": 498896, "i": 307931, "mz": "Sur", "reg": "Biobío"}]}
   },
 
   coquimbo: {
@@ -982,13 +906,13 @@ function renderNacional() {
   const kpiEl = document.getElementById('nacKpis');
   kpiEl.innerHTML = `
     <div class="kpi-card"><div class="kpi-icon" style="background:var(--red-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--red)"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <div class="kpi-val">${fK(totalViajes)}</div><div class="kpi-lbl">Viajes recibidos</div><div class="kpi-sub">Período: ${state.nacYear}</div></div>
+      <div class="kpi-val" style="font-size:1.5rem">${fmtExact(totalViajes)}</div><div class="kpi-lbl">Viajes recibidos</div><div class="kpi-sub">Período: ${state.nacYear}</div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:var(--teal-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
       <div class="kpi-val">108</div><div class="kpi-lbl">Destinos turísticos</div><div class="kpi-sub">Cobertura nacional</div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <div class="kpi-val">71.8<sup>%</sup></div><div class="kpi-lbl">Flujos interregionales</div><div class="kpi-sub">Del total de viajes</div></div>
+      <div class="kpi-val">71,8<sup>%</sup></div><div class="kpi-lbl">Flujos interregionales</div><div class="kpi-sub">Del total de viajes</div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:#ede8fc"><svg viewBox="0 0 24 24" style="stroke:var(--violet)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <div class="kpi-val">${maxMesNom.slice(0,3)}</div><div class="kpi-lbl">Mes pico</div><div class="kpi-sub">Mayor concentración de viajes</div></div>
+      <div class="kpi-val">${maxMesNom.slice(0,3)}</div><div class="kpi-lbl">Mes de mayor afluencia</div><div class="kpi-sub">Mayor concentración de viajes</div></div>
   `;
 
   // Anual Line
@@ -1001,8 +925,8 @@ function renderNacional() {
       borderWidth:2.5, pointRadius:4, pointBackgroundColor:MZ_COLORS[mz], tension:0.35, fill:false
     }))
   },{
-    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.y)}`}}},
-    scales:{x:{grid:{color:'#d6d1c920'}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmtExact(c.parsed.y)} viajes`}}},
+    scales:{x:{grid:{color:'#d6d1c920'}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v)}}}
   });
 
   // Donut
@@ -1012,7 +936,7 @@ function renderNacional() {
     labels:mzShow,
     datasets:[{data:donutVals, backgroundColor:mzShow.map(m=>MZ_COLORS[m]), borderColor:'#fff', borderWidth:3, hoverOffset:8}]
   },{
-    cutout:'60%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.label}: ${fK(c.parsed)}`}}},
+    cutout:'60%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.label}: ${fmtExact(c.parsed)} viajes`}}},
     scales:{x:{display:false},y:{display:false}}
   });
 
@@ -1021,13 +945,13 @@ function renderNacional() {
   makeChart('nacMesChart','bar',{
     labels:D.meses,
     datasets:[{
-      label:'Miles de viajes', data:mesVals,
+      label:'Viajes', data:mesVals,
       backgroundColor:mesVals.map((_,i)=>(i<=1||i===11)?D.C.red:(i===6?D.C.teal+'bb':D.C.Norte+'44')),
       borderRadius:3,borderSkipped:false
     }]
   },{
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
-    scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtExact(c.parsed.y)} viajes`}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v)}}}
   });
 
   // Verano/Invierno — use top dests of first selected year
@@ -1041,8 +965,8 @@ function renderNacional() {
     ]
   },{
     indexAxis:'y',
-    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.x)}`}}},
-    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}},y:{grid:{display:false}}}
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmtExact(c.parsed.x)} viajes`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v),font:{size:10}}},y:{grid:{display:false}}}
   });
 
   // Top destinos list
@@ -1056,7 +980,7 @@ function renderNacional() {
     listEl.innerHTML += `<div class="dest-item">
       <span class="dest-rk">${String(i+1).padStart(2,'0')}</span>
       <div><div class="dest-name">${d.d}</div><div class="dest-sub">${d.reg} <span style="color:${col};font-weight:600">· ${d.mz}</span></div></div>
-      <div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="bar-val">${fK(d.v)}</div></div>
+      <div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="bar-val">${fmtExact(d.v)}</div></div>
     </div>`;
   });
 
@@ -1069,8 +993,8 @@ function renderNacional() {
     ]
   },{
     indexAxis:'y',
-    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fK(c.parsed.x)}`}}},
-    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmtExact(c.parsed.x)} viajes`}}},
+    scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}
   });
 
   // Heatmap
@@ -1332,7 +1256,7 @@ function renderCoquimbo() {
     <div class="kpi-card"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
       <div class="kpi-val">67,2<sup>%</sup></div><div class="kpi-lbl">Flujos interregionales</div><div class="kpi-sub">De otras regiones</div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:#ede8fc"><svg viewBox="0 0 24 24" style="stroke:var(--violet)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <div class="kpi-val">Enero</div><div class="kpi-lbl">Mes pico</div><div class="kpi-sub">Mayor concentración de viajes</div></div>
+      <div class="kpi-val">Enero</div><div class="kpi-lbl">Mes de mayor afluencia</div><div class="kpi-sub">Mayor concentración de viajes</div></div>
   `;
 
   // ── Regiones emisoras — reactivo al año
@@ -1531,48 +1455,55 @@ function renderZoit() {
   const ys = getYears(state.zoitYear);
   const yr = state.zoitYear === 'Total' ? '2023' : state.zoitYear;
 
+  // Datos exactos verano/invierno por ZOIT (Dic-Mar vs Jun-Ago, sumado en el período 2019-2025)
+  const ZOIT_EXACT = {
+    elqui: { total: 2328719, ve: 1194961, iv: 409077, mes: [397561,425950,154129,113926,98978,135320,153499,120258,212905,169154,129718,217321] },
+    pichi: { total: 3166136, ve: 1588468, iv: 627059, mes: [550511,581025,199695,173919,139557,168553,262282,196224,258640,231123,147370,257237] }
+  };
+
   function buildZoitKpis(containerId, key) {
-    const z = D.zoit[key];
-    const totalV = sumYears(z.by_year, ys);
-    const ratio = (z.ve/(z.iv||1)).toFixed(2);
+    const ex = ZOIT_EXACT[key];
+    const ratio = (ex.ve/ex.iv).toFixed(2);
     const el = document.getElementById(containerId);
     el.innerHTML = `
       <div class="kpi-card" style="border:1px solid var(--rule)"><div class="kpi-icon" style="background:var(--teal-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        <div class="kpi-val">${fK(totalV)}</div><div class="kpi-lbl">Viajes recibidos</div></div>
+        <div class="kpi-val" style="font-size:1.5rem">${fmtExact(ex.total)}</div><div class="kpi-lbl">Viajes recibidos</div><div class="kpi-sub">Total acumulado 2019–2025</div></div>
       <div class="kpi-card" style="border:1px solid var(--rule)"><div class="kpi-icon" style="background:var(--gold-pale)"><svg viewBox="0 0 24 24" style="stroke:var(--gold)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-        <div class="kpi-val">${ratio}<sup>x</sup></div><div class="kpi-lbl">Ratio V/I</div></div>
+        <div class="kpi-val">${ratio}</div><div class="kpi-lbl">Índice estacional</div><div class="kpi-sub">${fmtExact(ex.ve)} viajes en verano / ${fmtExact(ex.iv)} en invierno</div></div>
     `;
   }
   buildZoitKpis('elquiKpis','elqui');
   buildZoitKpis('pichiKpis','pichi');
 
   // Anuales individuales
+  const ZOIT_KEY_NAME = { elqui: 'Valle del Elqui', pichi: 'Litoral Los Vilos - Pichidangui/ Quilimarí' };
+
   function barAnual(chartId, key, color) {
-    const z = D.zoit[key];
+    const exactByYear = COQ.dest_tur_by_year[ZOIT_KEY_NAME[key]];
     makeChart(chartId,'bar',{
       labels:D.anios,
       datasets:[{
-        label:'Miles de viajes',
-        data:D.anios.map(a=>z.by_year[a]||0),
+        label:'Viajes',
+        data:D.anios.map(a=>exactByYear[a]||0),
         backgroundColor:D.anios.map(a=>a===yr?color:color+'55'),
         borderRadius:4,borderSkipped:false
       }]
     },{
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtExact(c.parsed.y)} viajes`}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v)}}}
     });
   }
   barAnual('elquiAnualChart','elqui',D.C.teal);
   barAnual('pichiAnualChart','pichi',D.C.red);
 
   // Comparativa índice (base 2019=100)
-  const e19 = D.zoit.elqui.by_year['2019'];
-  const p19 = D.zoit.pichi.by_year['2019'];
+  const e19 = COQ.dest_tur_by_year['Valle del Elqui']['2019'];
+  const p19 = COQ.dest_tur_by_year['Litoral Los Vilos - Pichidangui/ Quilimarí']['2019'];
   makeChart('zoitCompChart','line',{
     labels:D.anios,
     datasets:[
-      {label:'Valle del Elqui',data:D.anios.map(a=>Math.round(D.zoit.elqui.by_year[a]/e19*100)),borderColor:D.C.teal,backgroundColor:D.C.teal+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.teal,tension:0.3,fill:false},
-      {label:'Litoral Pichidangui',data:D.anios.map(a=>Math.round(D.zoit.pichi.by_year[a]/p19*100)),borderColor:D.C.red,backgroundColor:D.C.red+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.red,tension:0.3,fill:false}
+      {label:'Valle del Elqui',data:D.anios.map(a=>Math.round(COQ.dest_tur_by_year['Valle del Elqui'][a]/e19*100)),borderColor:D.C.teal,backgroundColor:D.C.teal+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.teal,tension:0.3,fill:false},
+      {label:'Litoral Pichidangui',data:D.anios.map(a=>Math.round(COQ.dest_tur_by_year['Litoral Los Vilos - Pichidangui/ Quilimarí'][a]/p19*100)),borderColor:D.C.red,backgroundColor:D.C.red+'15',borderWidth:2.5,pointRadius:4,pointBackgroundColor:D.C.red,tension:0.3,fill:false}
     ]
   },{
     plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}`}}},
@@ -1582,26 +1513,26 @@ function renderZoit() {
     }
   });
 
-  // Mensuales ZOIT
+  // Mensuales ZOIT — valores exactos acumulados del período completo (no varían por año, ya que
+  // la fuente no permite desagregar mes×año a nivel de destino turístico)
   function mesChart(chartId, key, color) {
-    const z = D.zoit[key];
-    const mesVals = D.meses.map((_,i)=>ys.reduce((s,y)=>s+(z.mes_by_year[y]?.[i]||0),0));
+    const mesVals = ZOIT_EXACT[key].mes;
     makeChart(chartId,'line',{
       labels:D.meses,
       datasets:[{
-        label:'Miles de viajes',data:mesVals,
+        label:'Viajes',data:mesVals,
         borderColor:color,backgroundColor:color+'20',
         borderWidth:2,pointRadius:3,tension:0.4,fill:true
       }]
     },{
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fK(c.parsed.y)}`}}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fK(v)}}}
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtExact(c.parsed.y)} viajes`}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v)}}}
     });
   }
   mesChart('elquiMesChart','elqui',D.C.teal);
   mesChart('pichiMesChart','pichi',D.C.red);
 
-  // Orígenes — reactivos al año seleccionado
+  // Orígenes — reactivos al año seleccionado (valores exactos)
   function origChart(chartId, key, color) {
     const z = D.zoit[key];
     const yr = state.zoitYear;
@@ -1609,8 +1540,8 @@ function renderZoit() {
     makeChart(chartId,'bar',{
       labels: data.map(o=>o.c),
       datasets:[{
-        label:'Miles de viajes',
-        data: data.map(o=>o.v),
+        label:'Viajes',
+        data: data.map(o=>Math.round(o.v*1000)),
         backgroundColor: data.map((_,i)=>i===0?color:i===1?color+'cc':color+'55'),
         borderRadius:3,borderSkipped:'bottom'
       }]
@@ -1618,9 +1549,9 @@ function renderZoit() {
       indexAxis:'y',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
         const item = data[c.dataIndex];
-        return ` ${item.c} (${item.reg}): ${fmtV(c.parsed.x)}`;
+        return ` ${item.c} (${item.reg}): ${fmtExact(c.parsed.x)} viajes`;
       }}}},
-      scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtV(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:11}}}}
+      scales:{x:{grid:{color:'#d6d1c940'},ticks:{callback:v=>fmtExact(v),font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:11}}}}
     });
   }
   origChart('elquiOrigChart','elqui',D.C.teal);
